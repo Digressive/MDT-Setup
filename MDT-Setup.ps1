@@ -1,22 +1,13 @@
-## User Prefs
+## User Preferences
 $WinCode = "W10-21H2" ## Windows version and update
-$TZName = "GMT Standard Time"## The time zone for Windows. Used in CustomSettings.ini
-$KbLocaleCode = "0809:00000809" ## The keyboard locale for Windows. Used in CustomSettings.ini
-$UILang = "en-GB" ## The UI locale for Windows. Used in CustomSettings.ini
-$UsrLocale = "en-GB" ## The user locale for Windows. Used in CustomSettings.ini
-$KbLocaleName = "en-GB" ## The keyboard lacle name for Windows. Used in CustomSettings.ini
-$DomainName = "contoso" ## The domain of the user below. Used in CustomSettings.ini to add PC to domain
-$DomainUsr = "mdt_admin" ## The domain user to be used to add a PC to the domain. Used in CustomSettings.ini
-$DomainPwrd = "p@ssw0rd" ## The password of the user above. Used in CustomSettings.ini to add PC to domain
-$OU = "OU=PCs,DC=contoso,DC=com" ## The Organisational Unit to create the PC account. Used in CustomSettings.ini to add PC to domain
 
-## Windows Download Prefs
-## If you already have your own Windows source files then you should import that to the Build share as an OS.
+## Windows Download Preferences
+## If you already have your own Windows source files then you should import that to the Build share as an OS
 $ConvertESD = "enabled" ## Set this to "enabled" to have the script download Windows and convert the ESD to a WIM for MDT
-$WinFileName = "Windows.iso" ## The name of the Windows 10 .iso that will be downloaded via Media Creation Tool, if applicable.
-$LangCode = "en-gb" ## The language of the Windows to download
+$WinFileName = "Windows.iso" ## The name of the Windows 10 ISO that will be downloaded via Media Creation Tool
+$LangCode = "en-gb" ## The language of the Windows to download. Example: en-US
 $Edition = "Enterprise" ## The edition to download
-$DemoKey = "NPPR9-FWDCX-D2C8J-H872K-2YT43" ## This key is an evaluation key from the Microsot website and is public.
+$DemoKey = "NPPR9-FWDCX-D2C8J-H872K-2YT43" ## This key is an evaluation key from the Microsoft website and is public
 
 ## Share names and paths
 $MdtBuildShare = "C:\BuildShare" ## Local path of the Build share
@@ -25,7 +16,18 @@ $MdtBuildShareName = "BuildShare$" ## Share name of the Build share
 $MdtDepShare = "C:\DeployShare" ## Local path of the Deployment share
 $MdtDepShareName = "DeployShare$" ## Share name of the Deployment share
 
-## URLs
+## Preferences for Deployment share CustomSettings.ini
+$TZName = "GMT Standard Time"## The time zone for Windows
+$KbLocaleCode = "0809:00000809" ## The keyboard locale for Windows
+$UILang = "en-GB" ## The UI locale for Windows
+$UsrLocale = "en-GB" ## The user locale for Windows
+$KbLocaleName = "en-GB" ## The keyboard locale name for Windows
+$DomainUsr = "mdt_admin" ## The domain user to be used to add a PC to the domain
+$DomainPwrd = "p@ssw0rd" ## The password of the user above
+$DomainName = "contoso" ## The domain of the user above
+$OU = "OU=PCs,DC=contoso,DC=com" ## The Organisational Unit to create the PC account
+
+## URLs - shouldn't have to change these until MSFT release new versions
 $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
 $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2165884" ## Latest ADK
 $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2166133" ## Latest ADK Win PE
@@ -54,7 +56,8 @@ Start-Process msiexec -ArgumentList "/i $PSScriptRoot\MicrosoftDeploymentToolkit
 
 Write-Host "Installing MDT Patch KB4564442"
 Start-Process $PSScriptRoot\MDT_KB4564442.exe -ArgumentList "-q -extract:$PSScriptRoot\MDT_KB4564442" -Wait
-Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools" -Force
+Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x64\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x64"
+Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x86\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x86"
 
 ## Import MDT PowerShell
 Import-Module "$env:ProgramFiles\Microsoft Deployment Toolkit\bin\MicrosoftDeploymentToolkit.psd1"
@@ -145,7 +148,7 @@ Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
 FinishAction=SHUTDOWN
 SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs"
 
-## Change MDT config to exclude x86 support for boot media
+## Change MDT config to disable x86 support for boot media
 Write-Host "Configuring MDT"
 $XMLContent = Get-Content "$MdtBuildShare\Control\Settings.xml"
 $XMLContent = $XMLContent -replace '<SupportX86>True</SupportX86>','<SupportX86>False</SupportX86>'
@@ -231,7 +234,8 @@ SLShare=\\$env:ComputerName\$MdtDepShareName\Logs
 ; this line intentionally left blank
 "
 
-## Change MDT config to exclude x86 support for boot media
+## Change MDT config to disable x86 support for boot media
+## And set the WinPE selection profile for the drivers
 Write-Host "Configuring MDT"
 $XMLContent = Get-Content "$MdtDepShare\Control\Settings.xml"
 $XMLContent = $XMLContent -Replace '<SupportX86>True</SupportX86>','<SupportX86>False</SupportX86>'
