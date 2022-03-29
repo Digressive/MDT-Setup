@@ -24,7 +24,7 @@ $UsrLocale = "en-GB" ## The user locale for Windows
 $KbLocaleName = "en-GB" ## The keyboard locale name for Windows
 $DomainUsr = "mdt_admin" ## The domain user to be used to add a PC to the domain
 $DomainPwrd = "p@ssw0rd" ## The password of the user above
-$DomainName = "contoso" ## The domain of the user above
+$DomainName = "contoso.com" ## The FQDN of the user above
 $OU = "OU=PCs,DC=contoso,DC=com" ## The Organisational Unit to create the PC account
 
 ## URLs - shouldn't have to change these until MSFT release new versions
@@ -218,6 +218,7 @@ HideShell=YES
 ; Join Domain
 JoinDomain=$DomainName
 DomainAdmin=$DomainUsr
+DomainAdminDomain=$DomainUsr
 DomainAdminPassword=$DomainPwrd
 MachineObjectOU=$OU
 
