@@ -140,8 +140,13 @@ _SMSTSPackageName=%TaskSequenceName%
 DoCapture=YES
 ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value 'BackupFile=%TaskSequenceID%_#year(date) & "-" & month(date) & "-" & day(date) & "-" & hour(time) & "-" & minute(time)#.wim'
-Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
 
+Add-Content -Path X:\Foo\test.log -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+
+Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+
+Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
 ;If you want to use a WSUS server for updates, uncomment out this line and set the same of your update server
 ;WSUSServer=http://WSUS-SERVER-NAME:8530
 
@@ -151,7 +156,7 @@ SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs"
 ## Change MDT config to disable x86 support for boot media
 Write-Host "Configuring MDT"
 $XMLContent = Get-Content "$MdtBuildShare\Control\Settings.xml"
-$XMLContent = $XMLContent -replace '<SupportX86>True</SupportX86>','<SupportX86>False</SupportX86>'
+$XMLContent = $XMLContent -Replace '<SupportX86>True</SupportX86>','<SupportX86>False</SupportX86>'
 $XMLContent | Out-File "$MdtBuildShare\Control\Settings.xml"
 
 ## Update Build share to generate boot media
