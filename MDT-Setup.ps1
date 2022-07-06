@@ -29,8 +29,8 @@ $OU = "OU=PCs,DC=contoso,DC=com" ## The Organisational Unit to create the PC acc
 
 ## URLs - shouldn't have to change these until MSFT release new versions
 $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
-$AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2165884" ## Latest ADK
-$AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2166133" ## Latest ADK Win PE
+$AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2120254" ## ADK 2004
+$AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2120253" ## ADK 2004 Win PE
 $MdtPatchSrc = "https://download.microsoft.com/download/3/0/6/306AC1B2-59BE-43B8-8C65-E141EF287A5E/KB4564442/MDT_KB4564442.exe" ## MDT Patch
 $MctW10 = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
 
