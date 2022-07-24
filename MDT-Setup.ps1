@@ -1,31 +1,50 @@
 ## User Preferences
 $WinCode = "W10-21H2" ## Windows version and update
+$WinCode = Read-Host -Prompt "Enter Windows version and update (eg. W10-21H2)"
 
 ## Windows Download Preferences
 ## If you already have your own Windows source files then you should import that to the Build share as an OS
-$ConvertESD = "enabled" ## Set this to "enabled" to have the script download Windows and convert the ESD to a WIM for MDT
+$ConvertESD = "y" ## Set this to "enabled" to have the script download Windows and convert the ESD to a WIM for MDT
+$ConvertESD = Read-Host -Prompt "Do you want to download and convert the Windows 10 ESD to a WIM? (y/n)"
 $WinFileName = "Windows.iso" ## The name of the Windows 10 ISO that will be downloaded via Media Creation Tool
+$WinFileName = Read-Host -Prompt "Enter the name of the Windows.iso file (eg. windows.iso)"
 $LangCode = "en-gb" ## The language of the Windows to download. Example: en-US
+$LangCode = Read-Host -Prompt "Enter the language code of the Windows download (eg. en-gb)"
 $Edition = "Enterprise" ## The edition to download
+$Edition = Read-Host -Prompt "Enter the edition to download (eg. enterprise)"
 $DemoKey = "NPPR9-FWDCX-D2C8J-H872K-2YT43" ## This key is an evaluation key from the Microsoft website and is public
+$DemoKey = Read-Host -Prompt "Enter the key for the Windows download (eg. NPPR9-FWDCX-D2C8J-H872K-2YT43)"
 
 ## Share names and paths
 $MdtBuildShare = "C:\BuildShare" ## Local path of the Build share
+$MdtBuildShare = Read-Host -Prompt "Enter the local path of the Build share (eg. C:\BuildShare)"
 $MdtBuildShareName = "BuildShare$" ## Share name of the Build share
+$MdtBuildShareName = Read-Host -Prompt "Enter the share name of the Build share (eg. BuildShare$)"
 
 $MdtDepShare = "C:\DeployShare" ## Local path of the Deployment share
+$MdtBuildShare = Read-Host -Prompt "Enter the local path of the Deployment share (eg. C:\DeployShare)"
 $MdtDepShareName = "DeployShare$" ## Share name of the Deployment share
+$MdtBuildShareName = Read-Host -Prompt "Enter the share name of the Deployment share (eg. DeployShare$)"
 
 ## Preferences for Deployment share CustomSettings.ini
 $TZName = "GMT Standard Time"## The time zone for Windows
+$TZName = Read-Host -Prompt "Enter the time zone name (eg. GMT Standard Time)"
 $KbLocaleCode = "0809:00000809" ## The keyboard locale for Windows
+$KbLocaleCode = Read-Host -Prompt "Enter the keyboard locale for Windows (eg. 0809:00000809)"
 $UILang = "en-GB" ## The UI locale for Windows
+$UILang = Read-Host -Prompt "Enter the UI locale for Windows (eg. en-GB)"
 $UsrLocale = "en-GB" ## The user locale for Windows
+$UsrLocale = Read-Host -Prompt "Enter the user locale for Windows (eg. en-GB)"
 $KbLocaleName = "en-GB" ## The keyboard locale name for Windows
+$KbLocaleName = Read-Host -Prompt "Enter the keyboard locale name for Windows (eg. en-GB)"
 $DomainUsr = "mdt_admin" ## The domain user to be used to add a PC to the domain
+$DomainUsr = Read-Host -Prompt "Enter the domain user to be used to add a PC to the domain (eg. mdt_admin)"
 $DomainPwrd = "p@ssw0rd" ## The password of the user above
+$DomainPwrd = Read-Host -Prompt "Enter the password of the user above"
 $DomainName = "contoso.com" ## The FQDN of the user above
+$DomainName = Read-Host -Prompt "Enter the domain of the user above"
 $OU = "OU=PCs,DC=contoso,DC=com" ## The Organisational Unit to create the PC account
+$OU = Read-Host -Prompt "Enter the full AD path for newly imaged PCs (eg. OU=PCs,DC=contoso,DC=com)"
 
 ## URLs - shouldn't have to change these until MSFT release new versions
 $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
@@ -69,7 +88,7 @@ New-Item -Path "$MdtBuildShare" -ItemType Directory
 New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess Administrators
 New-PSDrive -Name "DS001" -PSProvider "MDTProvider" -Root "$MdtBuildShare" -Description "MDT Build Share" -NetworkPath "\\$env:ComputerName\$MdtBuildShareName" | Add-MDTPersistentDrive
 
-If ($ConvertESD -eq "enabled")
+If ($ConvertESD -eq "y")
 {
     ## Download OS
     Write-Host "Downloading Windows ISO"
