@@ -268,6 +268,14 @@ SkipSummary=YES
 SkipFinalSummary=YES
 FinishAction=SHUTDOWN
 SLShare=\\$env:ComputerName\$MdtDepShareName\Logs
+"
+If ($UseWSUS -eq "y")
+{
+    Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
+    WSUSServer=http://$WsusServer"
+}
+
+Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
 ; this line intentionally left blank
 ; this line intentionally left blank
 "
