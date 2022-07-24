@@ -4,10 +4,12 @@ $WinCode = Read-Host -Prompt "Enter Windows version and update (eg. W10-21H2)"
 
 ## Windows Download Preferences
 ## If you already have your own Windows source files then you should import that to the Build share as an OS
-$ConvertESD = "y" ## Set this to "enabled" to have the script download Windows and convert the ESD to a WIM for MDT
-$ConvertESD = Read-Host -Prompt "Do you want to download and convert the Windows 10 ESD to a WIM? (y/n)"
+$ConvertESD = "n" ## Set this to "enabled" to have the script download Windows and convert the ESD to a WIM for MDT
+$ConvertESD = Read-Host -Prompt "Do you want to download and convert the Windows 10 ESD to a WIM? (y/N)"
+
 $WinFileName = "Windows.iso" ## The name of the Windows 10 ISO that will be downloaded via Media Creation Tool
 $WinFileName = Read-Host -Prompt "Enter the name of the Windows.iso file (eg. windows.iso)"
+
 $LangCode = "en-gb" ## The language of the Windows to download. Example: en-US
 $LangCode = Read-Host -Prompt "Enter the language code of the Windows download (eg. en-gb)"
 $Edition = "Enterprise" ## The edition to download
@@ -40,11 +42,19 @@ $KbLocaleName = Read-Host -Prompt "Enter the keyboard locale name for Windows (e
 $DomainUsr = "mdt_admin" ## The domain user to be used to add a PC to the domain
 $DomainUsr = Read-Host -Prompt "Enter the domain user to be used to add a PC to the domain (eg. mdt_admin)"
 $DomainPwrd = "p@ssw0rd" ## The password of the user above
-$DomainPwrd = Read-Host -Prompt "Enter the password of the user above"
+$DomainPwrd = Read-Host -Prompt "Enter the password of the user above" -MaskInput
 $DomainName = "contoso.com" ## The FQDN of the user above
 $DomainName = Read-Host -Prompt "Enter the domain of the user above"
 $OU = "OU=PCs,DC=contoso,DC=com" ## The Organisational Unit to create the PC account
 $OU = Read-Host -Prompt "Enter the full AD path for newly imaged PCs (eg. OU=PCs,DC=contoso,DC=com)"
+
+$UseWSUS = "n"
+$UseWSUS = Read-Host -Prompt "Do you want to use a WSUS server? (y/N)"
+
+If ($UseWSUS -eq "y")
+{
+    $WSUSServer = Read-Host -Prompt "Enter the name and port of the WSUS server to use (eg. Wsus-Server:8530)"
+}
 
 ## URLs - shouldn't have to change these until MSFT release new versions
 $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
@@ -124,7 +134,7 @@ New-Item -Path "DS001:\Selection Profiles" -enable "True" -Name "$WinCode" -Comm
 Write-Host "Downloading Build Task Sequence template"
 Invoke-WebRequest -uri "https://raw.githubusercontent.com/Digressive/MDT-Files/master/MDT-Templates/Client-Build-Template.xml" -Outfile "$MdtBuildShare\Templates\Client-Build-Template.xml"
 
-If ($ConvertESD -eq "enabled")
+If ($ConvertESD -eq "y")
 {
     Write-Host "Creating Build Task Sequence"
     Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 10 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
@@ -165,10 +175,13 @@ Add-Content -Path X:\Foo\test.log -Value "SLShare=\\$env:ComputerName\$MdtBuildS
 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
 
-Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
-;If you want to use a WSUS server for updates, uncomment out this line and set the same of your update server
-;WSUSServer=http://WSUS-SERVER-NAME:8530
+If ($UseWSUS -eq "y")
+{
+    Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
+    WSUSServer=http://$WsusServer"
+}
 
+Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
 FinishAction=SHUTDOWN
 SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs"
 
