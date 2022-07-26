@@ -15,7 +15,7 @@ Here is what the script will do:
 9. Do some final configuration of the MDT "Build" share and generate the boot media.
 10. Create an MDT deployment share for the deployment of captured OS images and the folder structure.
 11. Create Package and Driver folders and Selection Profiles for captured images.
-12. Import a Task Sequence template for future deployments. This template has the "total control" driver configuration already "baked in".
+12. Import a Task Sequence template for future deployments. This template has the "total control" driver configuration already baked in.
 13. Set the configuration of CustomSettings.ini for the "Deploy" share.
 14. Do some final configuration of the MDT "Deploy" share and generate the boot media.
 
@@ -24,7 +24,7 @@ Some user interaction is still required. For example: importing drivers, adding 
 
 ## User Preferences
 
-At the top of the script are several variables that can be configured by the user to customise the MDT setup for their environment. If left as they are the script should run just fine.
+When you run the script it will ask you a series of questions to customise your installation.
 
 ## Support
 

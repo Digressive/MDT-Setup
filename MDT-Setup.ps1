@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION YY.MM.DD
+.VERSION 22.07.26
 
 .GUID
 
@@ -10,7 +10,7 @@
 
 .COPYRIGHT (C) Mike Galvin. All rights reserved.
 
-.TAGS
+.TAGS Microsoft Deployment Toolkit Install
 
 .LICENSEURI
 
@@ -50,7 +50,7 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version XX.XX.XX            
+            Mike Galvin   https://gal.vin                  Version 22.07.26            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
