@@ -2,7 +2,7 @@
 
 .VERSION 22.07.26
 
-.GUID
+.GUID fbe115c8-16db-441c-805a-5505f93eb012
 
 .AUTHOR Mike Galvin Contact: mike@gal.vin / twitter.com/mikegalvin_ / discord.gg/5ZsnJ5k
 
@@ -14,7 +14,7 @@
 
 .LICENSEURI
 
-.PROJECTURI
+.PROJECTURI https://gal.vin/utils/mdt-setup
 
 .ICONURI
 
