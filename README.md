@@ -1,5 +1,25 @@
 # MDT-Setup
 
+User configurable MDT setup script
+
+For full change log and more information, [visit my site.](https://gal.vin/utils/mdt-setup/)
+
+MDT-Setup is available from:
+
+* [GitHub](https://github.com/Digressive/MDT-Setup)
+* [The Microsoft PowerShell Gallery](https://www.powershellgallery.com/packages/MDT-Setup)
+
+Please consider supporting my work:
+
+* Sign up using [Patreon](https://www.patreon.com/mikegalvin).
+* Support with a one-time donation using [PayPal](https://www.paypal.me/digressive).
+
+If you’d like to contact me, please leave a comment, send me a [tweet or DM](https://twitter.com/mikegalvin_), or you can join my [Discord server](https://discord.gg/5ZsnJ5k).
+
+-Mike
+
+## Usage Information
+
 This script will install and configure Microsoft Deployment Toolkit and its prerequisites on a Windows computer with an internet connection. It has been tested on a basic Windows Server 2022 Standard edition virtual machine.
 
 Here is what the script will do:
@@ -44,15 +64,10 @@ When you run the script it will ask you a series of questions to customise your 
 * OU for new PC account (eg. OU=PCs,DC=contoso,DC=com)
 * WSUS server name and port (eg. WSUS-Srv:8530)
 
-## Support
+## Example
 
-For full change log and more information, [visit my site.](https://gal.vin/utils/i-haven't-done-this-yet)
+``` txt
+[path\]MDT-Setup.ps1
+```
 
-Please consider supporting my work:
-
-* Sign up [using Patreon.](https://www.patreon.com/mikegalvin)
-* Support with a one-time payment [using PayPal.](https://www.paypal.me/digressive)
-
-Join the [Discord](http://discord.gg/5ZsnJ5k) or Tweet me if you have questions: [@mikegalvin_](https://twitter.com/mikegalvin_)
-
--Mike
+This will run the script, user interaction is required to continue.
