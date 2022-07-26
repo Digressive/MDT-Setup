@@ -315,45 +315,39 @@ else {
             Write-Host "Backing up original cs.ini"
             Rename-Item -Path $MdtBuildShare\Control\CustomSettings.ini -NewName CustomSettings-OgBackup.ini
             Write-Host "Creating custom cs.ini"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Settings]
-            Priority=Default
-            Properties=MyCustomProperty
-
-            [Default]
-            OSInstall=Y
-            SkipCapture=YES
-            SkipAdminPassword=YES
-            SkipProductKey=YES
-            SkipComputerBackup=YES
-            SkipBitLocker=YES
-            SkipLocaleSelection=YES
-            SkipTimeZone=YES
-            SkipDomainMembership=YES
-            SkipSummary=YES
-            SkipFinalSummary=YES
-            SkipComputerName=YES
-            SkipUserData=YES
-
-            _SMSTSORGNAME=Build Share
-            _SMSTSPackageName=%TaskSequenceName%
-            DoCapture=YES
-            ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Settings]"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Priority=Default"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Properties=MyCustomProperty"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Default]"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "OSInstall=Y"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipCapture=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipAdminPassword=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipProductKey=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipComputerBackup=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipBitLocker=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipLocaleSelection=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipTimeZone=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipDomainMembership=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipSummary=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipFinalSummary=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipComputerName=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipUserData=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "_SMSTSORGNAME=Build Share"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "_SMSTSPackageName=%TaskSequenceName%"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "DoCapture=YES"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
             Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value 'BackupFile=%TaskSequenceID%_#year(date) & "-" & month(date) & "-" & day(date) & "-" & hour(time) & "-" & minute(time)#.wim'
-
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
-
             Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
             Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
 
             If ($UseWSUS -eq "y")
             {
-                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
-                WSUSServer=http://$WsusServer"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "WSUSServer=http://$WsusServer"
             }
 
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
-            FinishAction=SHUTDOWN
-            SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs"
+            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "FinishAction=SHUTDOWN"
 
             ## Change MDT config to disable x86 support for boot media
             Write-Host "Configuring MDT"
@@ -391,64 +385,64 @@ else {
             Write-Host "Backing up original cs.ini"
             Rename-Item -Path $MdtDepShare\Control\CustomSettings.ini -NewName CustomSettings-OgBackup.ini
             Write-Host "Creating custom cs.ini"
-            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "[Settings]
-            Priority=Model, Default, SetOSD
-            Properties=OSDPrefix
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "[Settings]"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "Priority=Model, Default, SetOSD"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "Properties=OSDPrefix"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "[Virtual Machine]"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "OSDComputerName=%TaskSequenceID%"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "[Default]"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "_SMSTSORGNAME=Deploy"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "_SMSTSPackageName=%TaskSequenceName%"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "; MDT deployment settings"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "OSInstall=Y"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipCapture=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipAdminPassword=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipProductKey=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipComputerBackup=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipBitLocker=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "; Locale and screen res"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "TimeZoneName=$TZName"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "KeyboardLocale=$KbLocaleCode"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "UILanguage=$UILang"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "UserLocale=$UsrLocale"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "KeyboardLocale=$KbLocaleName"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "BitsPerPel=32"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "VRefresh=60"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "XResolution=1"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "YResolution=1"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "HideShell=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "; Join Domain"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "JoinDomain=$DomainName"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "DomainAdmin=$DomainUsr"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "DomainAdminDomain=$DomainName"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "DomainAdminPassword=$DomainPwrd"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "MachineObjectOU=$OU"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "; Other Settings"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipUserData=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipDomainMembership=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipLocaleSelection=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipTimeZone=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipSummary=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipFinalSummary=YES"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "FinishAction=SHUTDOWN"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtDepShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtDepShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
 
-            [Virtual Machine]
-            OSDComputerName=%TaskSequenceID%
-
-            [Default]
-            _SMSTSORGNAME=Deploy
-            _SMSTSPackageName=%TaskSequenceName%
-
-            ; MDT deployment settings
-            OSInstall=Y
-            SkipCapture=YES
-            SkipAdminPassword=YES
-            SkipProductKey=YES
-            SkipComputerBackup=YES
-            SkipBitLocker=YES
-
-            ; Locale and screen res
-            TimeZoneName=$TZName
-            KeyboardLocale=$KbLocaleCode
-            UILanguage=$UILang
-            UserLocale=$UsrLocale
-            KeyboardLocale=$KbLocaleName
-            BitsPerPel=32
-            VRefresh=60
-            XResolution=1
-            YResolution=1
-            HideShell=YES
-
-            ; Join Domain
-            JoinDomain=$DomainName
-            DomainAdmin=$DomainUsr
-            DomainAdminDomain=$DomainUsr
-            DomainAdminPassword=$DomainPwrd
-            MachineObjectOU=$OU
-
-            ; Other Settings
-            SkipUserData=YES
-            SkipDomainMembership=YES
-            SkipLocaleSelection=YES
-            SkipTimeZone=YES
-            SkipSummary=YES
-            SkipFinalSummary=YES
-            FinishAction=SHUTDOWN
-            SLShare=\\$env:ComputerName\$MdtDepShareName\Logs
-            "
             If ($UseWSUS -eq "y")
             {
-                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
-                WSUSServer=http://$WsusServer"
+                Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "WSUSServer=http://$WsusServer"
             }
 
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "
-            ; this line intentionally left blank
-            ; this line intentionally left blank
-            "
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "; this line intentionally left blank"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "; this line intentionally left blank"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
 
             ## Change MDT config to disable x86 support for boot media
             ## And set the WinPE selection profile for the drivers
