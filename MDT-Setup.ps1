@@ -58,7 +58,7 @@ If ($Help)
 {
     Write-Host -Object "Usage:
     From a terminal run: [path\]MDT-Setup.ps1
-    Answer the questions, the default option is capatilized. eg. y/N - no is the default."
+    Answer the questions, the default option is capatilized. eg. y/N - no (N) is the default."
 }
 
 else {

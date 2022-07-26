@@ -4,7 +4,7 @@ This script will install and configure Microsoft Deployment Toolkit and its prer
 
 Here is what the script will do:
 
-1. Download the installers for Microsoft Deployment Toolkit, the latest MDT patch, and the latest ADK and WinPE for ADK.
+1. Download the installers for Microsoft Deployment Toolkit, the latest MDT patch, the latest ADK and WinPE for ADK.
 2. Silently install all the above.
 3. Create an MDT deployment share for OS builds and the folder structure.
 4. Download Windows 10 from the Media Creation Tool (this requires some user input).
@@ -19,12 +19,30 @@ Here is what the script will do:
 13. Set the configuration of CustomSettings.ini for the "Deploy" share.
 14. Do some final configuration of the MDT "Deploy" share and generate the boot media.
 
-The server is now configured to "build and capture" a Windows 10 image. Once captured a user can then import the image into the Deployment share and create a Task Sequence using the template included.
+When complete the server will be configured to "build and capture" a Windows 10 image. Once captured a user can then import the image into the Deployment share and create a Task Sequence using the template included.
+
 Some user interaction is still required. For example: importing drivers, adding applications to the build and capture task sequence and other things specific to the images you want to make.
 
 ## User Preferences
 
 When you run the script it will ask you a series of questions to customise your installation.
+
+* Windows version and update code (eg. W10-21H2)
+* Download and convert Windows ESD, edition, language
+* Build share path (eg. C:\BuildShare)
+* Build share name (eg. BuildShare$)
+* Deploy share path (eg. C:\DeployShare)
+* Deploy share name (eg. DeployShare$)
+* Time zone name for the deployed image (eg. GMT Standard Time)
+* Keyboard locale code for the deployed image (eg. 0809:00000809) Please see [Microsoft Docs for all the input locales](https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs?view=windows-11)
+* Keyboard locale name for the deployed image (eg. en-GB)
+* Windows UI language for the deployed image (eg. en-GB)
+* Windows user language for the deployed image (eg. en-GB)
+* Domain user for domain join (eg. djoin)
+* Domain password for above user (eg. p@ssw0rD)
+* Domain name for above user (eg. contoso.com)
+* OU for new PC account (eg. OU=PCs,DC=contoso,DC=com)
+* WSUS server name and port (eg. WSUS-Srv:8530)
 
 ## Support
 
