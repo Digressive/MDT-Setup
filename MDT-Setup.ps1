@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 22.07.26
+.VERSION 22.08.15
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -50,7 +50,7 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.07.26            
+            Mike Galvin   https://gal.vin                  Version 22.08.15            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
@@ -71,15 +71,16 @@ else {
     If ($Begin -eq "y")
     {
         ## User Preferences
-        $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying (default: W10-21H2)"
+
+        $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying. This will be used as a unique idenitifier for MDT. (default: W10-21H2)"
         If ($WinCode -eq '')
         {
-            $WinCode = "W10-21H2" ## Windows version and update)
+            $WinCode = "W10-21H2" ## Windows version and update
         }
 
         ## Windows Download Preferences
         ## If you already have your own Windows source files then you should import that to the Build share as an OS
-        $ConvertESD = Read-Host -Prompt "Do you want to download and convert the Windows 10 ESD to a WIM? (y/N)"
+        $ConvertESD = Read-Host -Prompt "Do you want to download and convert the Windows image to a WIM? (y/N)"
         If ($ConvertESD -eq '')
         {
             $ConvertESD = "n" ## Set this to "y" to have the script download Windows and convert the ESD to a WIM for MDT
@@ -87,6 +88,12 @@ else {
 
         If ($ConvertESD -eq "y")
         {
+            $WinVer = Read-Host -Prompt "Do you want to deploy Windows 11? (y/N)"
+            If ($WinVer -eq '')
+            {
+                $WinVer = "W10"
+            }
+
             $LangCode = Read-Host -Prompt "Enter the language code of the Windows download (default: en-gb)"
             If ($LangCode -eq '')
             {
@@ -219,7 +226,16 @@ else {
         $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2120254" ## ADK 2004
         $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2120253" ## ADK 2004 Win PE
         $MdtPatchSrc = "https://download.microsoft.com/download/3/0/6/306AC1B2-59BE-43B8-8C65-E141EF287A5E/KB4564442/MDT_KB4564442.exe" ## MDT Patch
-        $MctW10 = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
+        If ($WinVer -eq "W10")
+        {
+            $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
+            $MctExe = "MediaCreationTool21H2.exe"
+        }
+        
+        else {
+            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11
+            $MctExe = "MediaCreationToolW11.exe"
+        }
 
         If ($Ready -eq "y")
         {
@@ -262,19 +278,19 @@ else {
             {
                 ## Download OS
                 Write-Host "Downloading Windows iso"
-                Invoke-WebRequest -uri $MctW10 -Outfile "$PSScriptRoot\MediaCreationTool21H2.exe"
+                Invoke-WebRequest -uri $MctSrc -Outfile "$PSScriptRoot\$MctExe"
                 Write-Host "The Media Creation tool requires user interaction."
                 Write-Host "Use this key to download your Windows iso: $DemoKey"
                 Write-Host "Choose 'Create installation media' and then the 'ISO file' option to download an iso file."
                 Write-Host "Please save the Windows iso file to the same folder that contains this script, otherwise things will fail"
-                Start-Process $PSScriptRoot\MediaCreationTool21H2.exe -ArgumentList "/Eula Accept /Retail /MediaArch x64 /MediaLangCode $LangCode /MediaEdition $Edition" -Wait
+                Start-Process $PSScriptRoot\$MctExe -ArgumentList "/Eula Accept /Retail /MediaArch x64 /MediaLangCode $LangCode /MediaEdition $Edition" -Wait
 
                 If ($ConvertESD -eq "y")
                 {
                     $WinFileName = Read-Host -Prompt "Enter the name of the Windows iso file that you downloaded (default: windows.iso)"
                     If ($WinFileName -eq '')
                     {
-                        $WinFileName = "Windows.iso" ## The name of the Windows 10 iso that will be downloaded via Media Creation Tool
+                        $WinFileName = "Windows.iso" ## The name of the Windows iso that will be downloaded via Media Creation Tool
                     }
                 }
 
@@ -307,7 +323,14 @@ else {
             If ($ConvertESD -eq "y")
             {
                 Write-Host "Creating Build Task Sequence"
-                Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 10 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
+                If ($WinVer -eq "W10")
+                {
+                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 10 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
+                }
+
+                else {
+                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 11 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
+                }
             }
 
             ## MDT configuration
