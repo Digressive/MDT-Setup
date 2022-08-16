@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 22.08.15
+.VERSION 22.08.16
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -50,7 +50,7 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.08.15            
+            Mike Galvin   https://gal.vin                  Version 22.08.16            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
