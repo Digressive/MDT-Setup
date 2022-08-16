@@ -94,6 +94,10 @@ else {
                 $WinVer = "W10"
             }
 
+            else {
+                $WinVer = "W11"
+            }
+
             $LangCode = Read-Host -Prompt "Enter the language code of the Windows download (default: en-gb)"
             If ($LangCode -eq '')
             {
@@ -151,21 +155,11 @@ else {
             $KbLocaleCode = "0809:00000809" ## The keyboard locale for Windows
         }
 
-        $UILang = Read-Host -Prompt "Enter the UI locale for Windows (default: en-GB)"
+        $UILang = Read-Host -Prompt "Enter the locale for the Windows deployment (default: en-GB)"
         If ($UILang -eq '')
         {
             $UILang = "en-GB" ## The UI locale for Windows
-        }
-
-        $UsrLocale = Read-Host -Prompt "Enter the user locale for Windows (default: en-GB)"
-        If ($UsrLocale -eq '')
-        {
             $UsrLocale = "en-GB" ## The user locale for Windows
-        }
-
-        $KbLocaleName = Read-Host -Prompt "Enter the keyboard locale name for Windows (default: en-GB)"
-        If ($KbLocaleName -eq '')
-        {
             $KbLocaleName = "en-GB" ## The keyboard locale name for Windows
         }
 
