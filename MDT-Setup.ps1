@@ -300,6 +300,11 @@ else {
             Write-Host "Importing Windows to MDT"
             New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory
             Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode"
+            $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
+            ForEach ($WimFile in $WimFiles)
+            {
+                Rename-Item -Path "DS001:\Operating Systems\$WinCode\*.wim" -NewName "$WinCode.wim"
+            }
 
             ## Packages and Selection Profiles
             Write-Host "Creating selection profile"
@@ -313,14 +318,7 @@ else {
             If ($ConvertESD -eq "y")
             {
                 Write-Host "Creating Build Task Sequence"
-                If ($WinVer -eq "y")
-                {
-                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 11 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
-                }
-
-                else {
-                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 10 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
-                }
+                Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\$WinCode.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
             }
 
             ## MDT configuration
