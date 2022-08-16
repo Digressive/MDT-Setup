@@ -91,11 +91,7 @@ else {
             $WinVer = Read-Host -Prompt "Do you want to deploy Windows 11? (y/N)"
             If ($WinVer -eq '')
             {
-                $WinVer = "W10"
-            }
-
-            else {
-                $WinVer = "W11"
+                $WinVer = "n"
             }
 
             $LangCode = Read-Host -Prompt "Enter the language code of the Windows download (default: en-gb)"
@@ -220,15 +216,15 @@ else {
         $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2120254" ## ADK 2004
         $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2120253" ## ADK 2004 Win PE
         $MdtPatchSrc = "https://download.microsoft.com/download/3/0/6/306AC1B2-59BE-43B8-8C65-E141EF287A5E/KB4564442/MDT_KB4564442.exe" ## MDT Patch
-        If ($WinVer -eq "W10")
+        If ($WinVer -eq "y")
         {
-            $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
-            $MctExe = "MediaCreationTool21H2.exe"
+            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11
+            $MctExe = "MediaCreationToolW11.exe"
         }
         
         else {
-            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11
-            $MctExe = "MediaCreationToolW11.exe"
+            $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
+            $MctExe = "MediaCreationTool21H2.exe"
         }
 
         If ($Ready -eq "y")
@@ -317,13 +313,13 @@ else {
             If ($ConvertESD -eq "y")
             {
                 Write-Host "Creating Build Task Sequence"
-                If ($WinVer -eq "W10")
+                If ($WinVer -eq "y")
                 {
-                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 10 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
+                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 11 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
                 }
 
                 else {
-                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 11 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
+                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\Windows 10 Enterprise in $WinCode install.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
                 }
             }
 
