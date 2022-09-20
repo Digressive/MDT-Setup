@@ -50,7 +50,7 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.08.16            
+            Mike Galvin   https://gal.vin                  Version 22.09.20            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
@@ -98,18 +98,6 @@ else {
             If ($LangCode -eq '')
             {
                 $LangCode = "en-gb" ## The language of the Windows to download. Example: en-US
-            }
-
-            $Edition = Read-Host -Prompt "Enter the edition to download (default: enterprise)"
-            If ($Edition -eq '')
-            {
-                $Edition = "Enterprise" ## The edition to download
-            }
-
-            $DemoKey = Read-Host -Prompt "Enter the key for the Windows download (default: NPPR9-FWDCX-D2C8J-H872K-2YT43)"
-            If ($DemoKey -eq '')
-            {
-                $DemoKey = "NPPR9-FWDCX-D2C8J-H872K-2YT43" ## This key is an evaluation key from the Microsoft website and is public
             }
         }
 
@@ -182,8 +170,6 @@ else {
         If ($ConvertESD -eq "y")
         {
             Write-Host -Object "        Windows language to download : $LangCode"
-            Write-Host -Object "        Windows edition to download: $Edition"
-            Write-Host -Object "        Windows key for download: $DemoKey"
         }
 
         Write-Host -Object "        Build share path: $MdtBuildShare
@@ -270,10 +256,10 @@ else {
                 Write-Host "Downloading Windows iso"
                 Invoke-WebRequest -uri $MctSrc -Outfile "$PSScriptRoot\$MctExe"
                 Write-Host "The Media Creation tool requires user interaction."
-                Write-Host "Use this key to download your Windows iso: $DemoKey"
+                Write-Host "Use this key to download your Windows iso: NPPR9-FWDCX-D2C8J-H872K-2YT43"
                 Write-Host "Choose 'Create installation media' and then the 'ISO file' option to download an iso file."
                 Write-Host "Please save the Windows iso file to the same folder that contains this script, otherwise things will fail"
-                Start-Process $PSScriptRoot\$MctExe -ArgumentList "/Eula Accept /Retail /MediaArch x64 /MediaLangCode $LangCode /MediaEdition $Edition" -Wait
+                Start-Process $PSScriptRoot\$MctExe -ArgumentList "/Eula Accept /Retail /MediaArch x64 /MediaLangCode $LangCode /MediaEdition Enterprise" -Wait
 
                 If ($ConvertESD -eq "y")
                 {
