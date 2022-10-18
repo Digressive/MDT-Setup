@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 22.09.20
+.VERSION 22.10.18
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -50,7 +50,7 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.09.20            
+            Mike Galvin   https://gal.vin                  Version 22.10.18            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
@@ -72,10 +72,10 @@ else {
     {
         ## User Preferences
 
-        $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying. This will be used as a unique idenitifier for MDT. (default: W10-21H2)"
+        $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying. This will be used as a unique idenitifier for MDT. (default: W10-22H2)"
         If ($WinCode -eq '')
         {
-            $WinCode = "W10-21H2" ## Windows version and update
+            $WinCode = "W10-22H2" ## Windows version and update
         }
 
         ## Windows Download Preferences
@@ -207,10 +207,10 @@ else {
             $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11
             $MctExe = "MediaCreationToolW11.exe"
         }
-        
+
         else {
             $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
-            $MctExe = "MediaCreationTool21H2.exe"
+            $MctExe = "MediaCreationTool22H2.exe"
         }
 
         If ($Ready -eq "y")

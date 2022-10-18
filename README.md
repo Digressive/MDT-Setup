@@ -47,7 +47,7 @@ Some user interaction is still required. For example: importing drivers, adding 
 
 When you run the script it will ask you a series of questions to customise your installation.
 
-* Windows version and update code (eg. W10-21H2)
+* Windows version and update code (eg. W10-22H2)
 * Download and convert Windows ESD, edition, language
 * Build share path (eg. C:\BuildShare)
 * Build share name (eg. BuildShare$)
