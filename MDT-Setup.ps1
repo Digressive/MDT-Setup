@@ -72,7 +72,22 @@ If ($Help)
 {
     Write-Host -Object "Usage:
     From a terminal run: [path\]MDT-Setup.ps1
-    Answer the questions, the default option is capitalized. eg. y/N - no (N) is the default."
+    Answer the questions, the default option is capitalized. eg. y/N - no (N) is the default.
+    You will need to know the following information:
+    Windows version to deploy
+    Windows language
+    Build share path and name
+    Deploy share path and name
+    Time zone name
+    Keyboard locale code and name
+    Windows UI language
+    Windows user language
+    Domain group for MDT Admins
+    Domain user for domain join
+    Domain password for above user
+    Domain name
+    OU for new PC accounts
+    WSUS server information if you want to use it"
     exit
 }
 
