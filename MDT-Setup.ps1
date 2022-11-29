@@ -162,7 +162,7 @@ else {
             $KbLocaleName = "en-GB" ## The keyboard locale name for Windows
         }
 
-        $MDTAdminGrp = Read-Host -Prompt "Enter the domain group to be used for MDt administrators (eg. mdt-admins)"
+        $MDTAdminGrp = Read-Host -Prompt "Enter the domain group to be used for MDT administrators (eg. mdt-admins)"
         $DomainUsr = Read-Host -Prompt "Enter the domain user to be used to add a PC to the domain - this user should be a member of the MDT Admins domain group (eg. mdt_admin)"
         $DomainPwrd = Read-Host -Prompt "Enter the password of the user above (eg. p@ssw0rD)"
         $DomainName = Read-Host -Prompt "Enter the domain of the user above (eg. contoso.com)"
@@ -302,11 +302,15 @@ else {
             ## Add to MDT
             Write-Host "Importing Windows to MDT"
             New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory
-            Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode"
-            $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
-            ForEach ($WimFile in $WimFiles)
+
+            If ($ConvertESD -eq "y")
             {
-                Rename-Item -Path "DS001:\Operating Systems\$WinCode\*.wim" -NewName "$WinCode.wim"
+                Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode"
+                $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
+                ForEach ($WimFile in $WimFiles)
+                {
+                    Rename-Item -Path "DS001:\Operating Systems\$WinCode\*.wim" -NewName "$WinCode.wim"
+                }
             }
 
             ## Packages and Selection Profiles
@@ -325,10 +329,10 @@ else {
             }
 
             ## MDT configuration
-            ## Build share CS.ini
-            Write-Host "Backing up original cs.ini"
+            ## Build share CustomSettings.ini
+            Write-Host "Backing up original CustomSettings.ini"
             Rename-Item -Path $MdtBuildShare\Control\CustomSettings.ini -NewName CustomSettings-OgBackup.ini
-            Write-Host "Creating custom cs.ini"
+            Write-Host "Creating custom CustomSettings.ini"
             Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Settings]"
             Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Priority=Default"
             Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Properties=MyCustomProperty"
@@ -395,10 +399,10 @@ else {
             Write-Host "Downloading Deploy Task Sequence template"
             Invoke-WebRequest -uri "https://raw.githubusercontent.com/Digressive/MDT-Files/master/MDT-Templates/Client-Deploy-Template.xml" -Outfile "$MdtDepShare\Templates\Client-Deploy-Template.xml"
 
-            ## Deploy share CS.ini
-            Write-Host "Backing up original cs.ini"
+            ## Deploy share CustomSettings.ini
+            Write-Host "Backing up original CustomSettings.ini"
             Rename-Item -Path $MdtDepShare\Control\CustomSettings.ini -NewName CustomSettings-OgBackup.ini
-            Write-Host "Creating custom cs.ini"
+            Write-Host "Creating custom CustomSettings.ini"
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "[Settings]"
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "Priority=Model, Default, SetOSD"
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "Properties=OSDPrefix"
@@ -471,8 +475,11 @@ else {
             Update-MDTDeploymentShare -path "DS002:" -Force
 
             ## Set Permissions
+            Write-Host "Setting Share Permissions"
             Grant-SmbShareAccess -Name $MdtBuildShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force
             Grant-SmbShareAccess -Name $MdtDepShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force
+
+            Write-Host "Setting File Permissions"
             icacls "$MdtBuildShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
             icacls "$MdtDepShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
 
