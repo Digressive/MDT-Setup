@@ -55,7 +55,7 @@ Param(
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
-If ($NoUpdateCheck)
+If (!$NoUpdateCheck)
 {
     $ScriptVersion = "22.11.29"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
