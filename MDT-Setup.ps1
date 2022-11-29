@@ -40,7 +40,7 @@
 [CmdletBinding()]
 Param(
     [switch]$Help,
-    [switch]$NoUpdateCheck)
+    [switch]$UpdateCheck)
 
     Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "
      __   __  ______   _______         _______  _______  _______  __   __  _______     
@@ -55,15 +55,16 @@ Param(
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
-If (!$NoUpdateCheck)
+If ($UpdateCheck)
 {
     $ScriptVersion = "22.11.29"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
-    If ($VerCheck -notmatch ".VERSION $ScriptVersion")
+    If ($null -eq $VerCheck)
     {
-        Write-Host "There is an updated version of this script available."
+        Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "There is an updated version of this script available."
+        exit
     }
 }
 
@@ -72,6 +73,7 @@ If ($Help)
     Write-Host -Object "Usage:
     From a terminal run: [path\]MDT-Setup.ps1
     Answer the questions, the default option is capitalized. eg. y/N - no (N) is the default."
+    exit
 }
 
 else {
