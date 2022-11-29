@@ -58,6 +58,7 @@ When you run the script it will ask you a series of questions to customise your 
 * Keyboard locale name for the deployed image (eg. en-GB)
 * Windows UI language for the deployed image (eg. en-GB)
 * Windows user language for the deployed image (eg. en-GB)
+* Domain group for MDT Admins (eg. mdt-admins)
 * Domain user for domain join (eg. djoin)
 * Domain password for above user (eg. p@ssw0rD)
 * Domain name for above user (eg. contoso.com)
