@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 22.10.18
+.VERSION 22.11.29
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -39,7 +39,8 @@
 ## Set up command line switches.
 [CmdletBinding()]
 Param(
-    [switch]$Help)
+    [switch]$Help,
+    [switch]$NoUpdateCheck)
 
     Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "
      __   __  ______   _______         _______  _______  _______  __   __  _______     
@@ -50,15 +51,27 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.10.18            
+            Mike Galvin   https://gal.vin                  Version 22.11.29            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
+
+If ($NoUpdateCheck)
+{
+    $ScriptVersion = "22.11.29"
+    $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
+    $SourceCheck = Invoke-RestMethod -uri "$RawSource"
+    $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
+    If ($VerCheck -notmatch ".VERSION $ScriptVersion")
+    {
+        Write-Host "There is an updated version of this script available."
+    }
+}
 
 If ($Help)
 {
     Write-Host -Object "Usage:
     From a terminal run: [path\]MDT-Setup.ps1
-    Answer the questions, the default option is capatilized. eg. y/N - no (N) is the default."
+    Answer the questions, the default option is capitalized. eg. y/N - no (N) is the default."
 }
 
 else {
@@ -72,7 +85,7 @@ else {
     {
         ## User Preferences
 
-        $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying. This will be used as a unique idenitifier for MDT. (default: W10-22H2)"
+        $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying. This will be used as a unique identifier for MDT. (default: W10-22H2)"
         If ($WinCode -eq '')
         {
             $WinCode = "W10-22H2" ## Windows version and update
@@ -147,7 +160,8 @@ else {
             $KbLocaleName = "en-GB" ## The keyboard locale name for Windows
         }
 
-        $DomainUsr = Read-Host -Prompt "Enter the domain user to be used to add a PC to the domain (eg. mdt_admin)"
+        $MDTAdminGrp = Read-Host -Prompt "Enter the domain group to be used for MDt administrators (eg. mdt-admins)"
+        $DomainUsr = Read-Host -Prompt "Enter the domain user to be used to add a PC to the domain - this user should be a member of the MDT Admins domain group (eg. mdt_admin)"
         $DomainPwrd = Read-Host -Prompt "Enter the password of the user above (eg. p@ssw0rD)"
         $DomainName = Read-Host -Prompt "Enter the domain of the user above (eg. contoso.com)"
         $OU = Read-Host -Prompt "Enter the full AD path for newly imaged PCs (eg. OU=PCs,DC=contoso,DC=com)"
@@ -181,6 +195,7 @@ else {
         Keyboard locale name: $KbLocaleName
         Windows UI language: $UILang
         Windows user language: $UsrLocale
+        Domain group for MDT permissions: $MDTAdminGrp
         Domain user for domain join: $DomainUsr
         Domain password for above user: $DomainPwrd
         Domain name: $DomainName
@@ -452,6 +467,12 @@ else {
             ## Update Deploy share to generate boot media
             Write-Host "Updating Deploy share and generating boot media"
             Update-MDTDeploymentShare -path "DS002:" -Force
+
+            ## Set Permissions
+            Grant-SmbShareAccess -Name $MdtBuildShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force
+            Grant-SmbShareAccess -Name $MdtDepShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force
+            icacls "$MdtBuildShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
+            icacls "$MdtDepShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
 
             Write-Host "Finished!"
         }
