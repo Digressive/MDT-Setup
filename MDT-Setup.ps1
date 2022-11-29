@@ -63,7 +63,7 @@ If ($UpdateCheck)
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
     If ($null -eq $VerCheck)
     {
-        Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "There is an updated version of this script available."
+        Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "There is an update available."
         exit
     }
 }
