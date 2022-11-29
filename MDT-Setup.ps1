@@ -300,11 +300,11 @@ else {
             }
 
             ## Add to MDT
-            Write-Host "Importing Windows to MDT"
             New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory
 
             If ($ConvertESD -eq "y")
             {
+                Write-Host "Importing Windows to MDT"
                 Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode"
                 $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
                 ForEach ($WimFile in $WimFiles)
