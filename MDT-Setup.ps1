@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 22.11.29
+.VERSION 22.12.02
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -51,19 +51,24 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.11.29            
+            Mike Galvin   https://gal.vin                  Version 22.12.02            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
 If ($UpdateCheck)
 {
-    $ScriptVersion = "22.11.29"
+    $ScriptVersion = "22.12.02"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
     If ($null -eq $VerCheck)
     {
         Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "There is an update available."
+        exit
+    }
+
+    else {
+        Write-Host -ForegroundColor Yellow -BackgroundColor Black -Object "This script is up to date."
         exit
     }
 }
