@@ -1,10 +1,10 @@
 <#PSScriptInfo
 
-.VERSION 22.12.02
+.VERSION 23.06.23
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
-.AUTHOR Mike Galvin Contact: mike@gal.vin 
+.AUTHOR Mike Galvin Contact: mike@gal.vin
 
 .COMPANYNAME Mike Galvin
 
@@ -51,13 +51,13 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 22.12.02            
+            Mike Galvin   https://gal.vin                  Version 23.06.23            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
 If ($UpdateCheck)
 {
-    $ScriptVersion = "22.12.02"
+    $ScriptVersion = "23.06.23"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
@@ -236,9 +236,14 @@ else {
 
         ## URLs - shouldn't have to change these until MSFT release new versions
         $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
+        $MdtExe = "MicrosoftDeploymentToolkit_x64.msi"
         $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2120254" ## ADK 2004
+        $AdkExe = "adksetup.exe"
         $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2120253" ## ADK 2004 Win PE
+        $AdkPeExe = "adkwinpesetup.exe"
         $MdtPatchSrc = "https://download.microsoft.com/download/3/0/6/306AC1B2-59BE-43B8-8C65-E141EF287A5E/KB4564442/MDT_KB4564442.exe" ## MDT Patch
+        $MdtPatchExe = "MDT_KB4564442.exe"
+
         If ($WinVer -eq "y")
         {
             $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11
@@ -250,30 +255,107 @@ else {
             $MctExe = "MediaCreationTool22H2.exe"
         }
 
+        If ($ConvertESD -eq "y")
+        {
+            ## Download OS
+            Write-Host "Downloading Windows iso"
+            Invoke-WebRequest -uri $MctSrc -Outfile "$PSScriptRoot\$MctExe"
+            If ((Test-Path -Path "$PSScriptRoot\$MctExe") -eq $false)
+            {
+                Write-host "$MctExe failed to download"
+            }
+
+            Write-Host "The Media Creation tool requires user interaction."
+            Write-Host ""
+            Write-Host "        * Use this key to download your Windows iso: NPPR9-FWDCX-D2C8J-H872K-2YT43"
+            Write-Host "        * Choose 'Create installation media' and then the 'ISO file' option to download an iso file."
+            Write-Host "        * Please save the Windows iso file to the same folder that contains this script, otherwise things will fail."
+            Write-Host "        * Make a note of the file name of the Windows iso file, you'll need it for the next step."
+            Write-Host ""
+            Start-Process $PSScriptRoot\$MctExe -ArgumentList "/Eula Accept /Retail /MediaArch x64 /MediaLangCode $LangCode /MediaEdition Enterprise" -Wait
+
+            If ($ConvertESD -eq "y")
+            {
+                $WinFileName = Read-Host -Prompt "Enter the name of the Windows iso file that you downloaded (default: windows.iso)"
+                If ($WinFileName -eq '')
+                {
+                    $WinFileName = "Windows.iso" ## The name of the Windows iso that will be downloaded via Media Creation Tool
+                }
+
+                If ((Test-Path -Path "$PSScriptRoot\$WinFileName") -eq $false)
+                {
+                    Write-host "$WinFileName not found."
+                }
+            }
+        }
+
         If ($Ready -eq "y")
         {
             ##
             ## Start Process
             ##
             ## Downloads
+            Write-Host "You can go and make a coffee now."
+            Write-Host ""
             Write-Host "Downloading Installers"
-            Invoke-WebRequest -uri $MdtSrc -Outfile "$PSScriptRoot\MicrosoftDeploymentToolkit_x64.msi"
-            Invoke-WebRequest -uri $AdkSrc -Outfile "$PSScriptRoot\adksetup.exe"
-            Invoke-WebRequest -uri $AdkPeSrc -Outfile "$PSScriptRoot\adkwinpesetup.exe"
-            Invoke-WebRequest -uri $MdtPatchSrc -Outfile "$PSScriptRoot\MDT_KB4564442.exe"
+            Invoke-WebRequest -uri $MdtSrc -Outfile "$PSScriptRoot\$MdtExe"
+            If ((Test-Path -Path "$PSScriptRoot\$MdtExe") -eq $false)
+            {
+                Write-host "$MdtExe failed to download"
+            }
+
+            Invoke-WebRequest -uri $AdkSrc -Outfile "$PSScriptRoot\$AdkExe"
+            If ((Test-Path -Path "$PSScriptRoot\$AdkExe") -eq $false)
+            {
+                Write-host "$AdkExe failed to download"
+            }
+            
+            Invoke-WebRequest -uri $AdkPeSrc -Outfile "$PSScriptRoot\$AdkPeExe"
+            If ((Test-Path -Path "$PSScriptRoot\$AdkPeExe") -eq $false)
+            {
+                Write-host "$AdkPeExe failed to download"
+            }
+            
+            Invoke-WebRequest -uri $MdtPatchSrc -Outfile "$PSScriptRoot\$MdtPatchExe"
+            If ((Test-Path -Path "$PSScriptRoot\$MdtPatchExe") -eq $false)
+            {
+                Write-host "$MdtPatchExe failed to download"
+            }
 
             ## Installs
             Write-Host "Installing ADK"
-            Start-Process $PSScriptRoot\adksetup.exe -ArgumentList "/features OptionId.DeploymentTools OptionId.ICDConfigurationDesigner OptionId.ImagingAndConfigurationDesigner OptionId.UserStateMigrationTool /q" -Wait
+            try {
+                Start-Process $PSScriptRoot\adksetup.exe -ArgumentList "/features OptionId.DeploymentTools OptionId.ICDConfigurationDesigner OptionId.ImagingAndConfigurationDesigner OptionId.UserStateMigrationTool /q" -Wait
+            }
+            catch {
+                Write-host "ADK failed to install"
+            }
 
             Write-Host "Installing ADK-WinPE"
-            Start-Process $PSScriptRoot\adkwinpesetup.exe -ArgumentList "/features + /q" -Wait
+            try {
+                Start-Process $PSScriptRoot\adkwinpesetup.exe -ArgumentList "/features + /q" -Wait
+            }
+            catch {
+                Write-host "ADK-WinPE failed to install"
+            }
 
             Write-Host "Installing MDT"
-            Start-Process msiexec -ArgumentList "/i $PSScriptRoot\MicrosoftDeploymentToolkit_x64.msi /qn" -Wait
+            try {
+                Start-Process msiexec -ArgumentList "/i $PSScriptRoot\MicrosoftDeploymentToolkit_x64.msi /qn" -Wait
+            }
+            catch {
+                Write-host "MDT failed to install"
+            }
 
             Write-Host "Installing MDT Patch KB4564442"
-            Start-Process $PSScriptRoot\MDT_KB4564442.exe -ArgumentList "-q -extract:$PSScriptRoot\MDT_KB4564442" -Wait
+            try {
+                Start-Process $PSScriptRoot\MDT_KB4564442.exe -ArgumentList "-q -extract:$PSScriptRoot\MDT_KB4564442" -Wait
+            }
+            catch {
+                Write-host "MDT Patch KB4564442 failed to extract"
+            }
+
+            ## Copying files to the MDT install folder
             Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x64\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x64"
             Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x86\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x86"
 
@@ -283,35 +365,17 @@ else {
             ## Build Share
             ## Create Build Share
             Write-Host "Creating Build Share"
-            New-Item -Path "$MdtBuildShare" -ItemType Directory
-            New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess Administrators
-            New-PSDrive -Name "DS001" -PSProvider "MDTProvider" -Root "$MdtBuildShare" -Description "MDT Build Share" -NetworkPath "\\$env:ComputerName\$MdtBuildShareName" | Add-MDTPersistentDrive
+            New-Item -Path "$MdtBuildShare" -ItemType Directory | Out-Null
+            New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess Administrators | Out-Null
+            New-PSDrive -Name "DS001" -PSProvider "MDTProvider" -Root "$MdtBuildShare" -Description "MDT Build Share" -NetworkPath "\\$env:ComputerName\$MdtBuildShareName" | Add-MDTPersistentDrive | Out-Null
 
             If ($ConvertESD -eq "y")
             {
-                ## Download OS
-                Write-Host "Downloading Windows iso"
-                Invoke-WebRequest -uri $MctSrc -Outfile "$PSScriptRoot\$MctExe"
-                Write-Host "The Media Creation tool requires user interaction."
-                Write-Host "Use this key to download your Windows iso: NPPR9-FWDCX-D2C8J-H872K-2YT43"
-                Write-Host "Choose 'Create installation media' and then the 'ISO file' option to download an iso file."
-                Write-Host "Please save the Windows iso file to the same folder that contains this script, otherwise things will fail"
-                Start-Process $PSScriptRoot\$MctExe -ArgumentList "/Eula Accept /Retail /MediaArch x64 /MediaLangCode $LangCode /MediaEdition Enterprise" -Wait
-
-                If ($ConvertESD -eq "y")
-                {
-                    $WinFileName = Read-Host -Prompt "Enter the name of the Windows iso file that you downloaded (default: windows.iso)"
-                    If ($WinFileName -eq '')
-                    {
-                        $WinFileName = "Windows.iso" ## The name of the Windows iso that will be downloaded via Media Creation Tool
-                    }
-                }
-
                 ## Copy Source Files
                 Write-Host "Copying Windows source files"
-                Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter
+                Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter | Out-Null
                 Copy-Item -Path \\.\CDROM1\ -Destination $PSScriptRoot\$WinCode -Recurse
-                Dismount-DiskImage -ImagePath "$PSScriptRoot\Windows.iso"
+                Dismount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" | Out-Null
 
                 ## Convert ESD to WIM
                 Write-Host "Converting ESD to WIM"
@@ -320,12 +384,12 @@ else {
             }
 
             ## Add to MDT
-            New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory
+            New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory | Out-Null
 
             If ($ConvertESD -eq "y")
             {
                 Write-Host "Importing Windows to MDT"
-                Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode"
+                Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode" | Out-Null
                 $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
                 ForEach ($WimFile in $WimFiles)
                 {
@@ -335,8 +399,8 @@ else {
 
             ## Packages and Selection Profiles
             Write-Host "Creating selection profile"
-            New-Item -Path "DS001:\Packages\$WinCode" -ItemType Directory
-            New-Item -Path "DS001:\Selection Profiles" -enable "True" -Name "$WinCode" -Comments "" -Definition "<SelectionProfile><Include path=`"Packages\$WinCode`" /></SelectionProfile>" -ReadOnly "False"
+            New-Item -Path "DS001:\Packages\$WinCode" -ItemType Directory | Out-Null
+            New-Item -Path "DS001:\Selection Profiles" -enable "True" -Name "$WinCode" -Comments "" -Definition "<SelectionProfile><Include path=`"Packages\$WinCode`" /></SelectionProfile>" -ReadOnly "False" | Out-Null
 
             ## New TS From Template
             Write-Host "Downloading Build Task Sequence template"
@@ -345,7 +409,7 @@ else {
             If ($ConvertESD -eq "y")
             {
                 Write-Host "Creating Build Task Sequence"
-                Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\$WinCode.wim" -FullName "user" -OrgName "org" -HomePage "about:blank"
+                Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\$WinCode.wim" -FullName "user" -OrgName "org" -HomePage "about:blank" | Out-Null
             }
 
             ## MDT configuration
@@ -395,25 +459,25 @@ else {
 
             ## Update Build share to generate boot media
             Write-Host "Updating Build share and generating boot media"
-            Update-MDTDeploymentShare -path "DS001:" -Force
+            Update-MDTDeploymentShare -path "DS001:" -Force | Out-Null
 
             ## Deployment Share
             ## Create Deployment Share
             Write-Host "Creating Deployment Share"
-            New-Item -Path "$MdtDepShare" -ItemType Directory
-            New-SmbShare -Name "$MdtDepShareName" -Path "$MdtDepShare" -FullAccess Administrators
-            New-PSDrive -Name "DS002" -PSProvider "MDTProvider" -Root "$MdtDepShare" -Description "MDT Deploy Share" -NetworkPath "\\$env:ComputerName\$MdtDepShareName" | Add-MDTPersistentDrive
+            New-Item -Path "$MdtDepShare" -ItemType Directory | Out-Null
+            New-SmbShare -Name "$MdtDepShareName" -Path "$MdtDepShare" -FullAccess Administrators | Out-Null
+            New-PSDrive -Name "DS002" -PSProvider "MDTProvider" -Root "$MdtDepShare" -Description "MDT Deploy Share" -NetworkPath "\\$env:ComputerName\$MdtDepShareName" | Add-MDTPersistentDrive | Out-Null
 
             ## Packages, Drivers and Selection Profiles
             Write-Host "Creating selection profiles, package and driver folder structure"
-            New-Item -Path "DS002:\Packages\$WinCode" -ItemType Directory
-            New-Item -Path "DS002:\Selection Profiles" -enable "True" -Name "$WinCode" -Comments "" -Definition "<SelectionProfile><Include path=`"Packages\$WinCode`" /></SelectionProfile>" -ReadOnly "False"
-            New-Item -Path "DS002:\Out-of-Box Drivers\Microsoft Corporation" -ItemType Directory
-            New-Item -Path "DS002:\Out-of-Box Drivers\Microsoft Corporation\Virtual Machine" -ItemType Directory
-            New-Item -Path "DS002:\Out-of-Box Drivers\VMware, Inc." -ItemType Directory
-            New-Item -Path "DS002:\Out-of-Box Drivers\VMware, Inc.\VMwareVirtual Platform" -ItemType Directory
-            New-Item -Path "DS002:\Out-of-Box Drivers\WinPE" -ItemType Directory
-            New-Item -Path "DS002:\Selection Profiles" -enable "True" -Name "WinPE" -Comments "" -Definition "<SelectionProfile><Include path=`"Out-of-Box Drivers\WinPE`" /></SelectionProfile>" -ReadOnly "False"
+            New-Item -Path "DS002:\Packages\$WinCode" -ItemType Directory | Out-Null
+            New-Item -Path "DS002:\Selection Profiles" -enable "True" -Name "$WinCode" -Comments "" -Definition "<SelectionProfile><Include path=`"Packages\$WinCode`" /></SelectionProfile>" -ReadOnly "False" | Out-Null
+            New-Item -Path "DS002:\Out-of-Box Drivers\Microsoft Corporation" -ItemType Directory | Out-Null
+            New-Item -Path "DS002:\Out-of-Box Drivers\Microsoft Corporation\Virtual Machine" -ItemType Directory | Out-Null
+            New-Item -Path "DS002:\Out-of-Box Drivers\VMware, Inc." -ItemType Directory | Out-Null
+            New-Item -Path "DS002:\Out-of-Box Drivers\VMware, Inc.\VMwareVirtual Platform" -ItemType Directory | Out-Null
+            New-Item -Path "DS002:\Out-of-Box Drivers\WinPE" -ItemType Directory | Out-Null
+            New-Item -Path "DS002:\Selection Profiles" -enable "True" -Name "WinPE" -Comments "" -Definition "<SelectionProfile><Include path=`"Out-of-Box Drivers\WinPE`" /></SelectionProfile>" -ReadOnly "False" | Out-Null
 
             ## New TS From Template
             Write-Host "Downloading Deploy Task Sequence template"
@@ -492,12 +556,12 @@ else {
 
             ## Update Deploy share to generate boot media
             Write-Host "Updating Deploy share and generating boot media"
-            Update-MDTDeploymentShare -path "DS002:" -Force
+            Update-MDTDeploymentShare -path "DS002:" -Force | Out-Null
 
             ## Set Permissions
             Write-Host "Setting Share Permissions"
-            Grant-SmbShareAccess -Name $MdtBuildShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force
-            Grant-SmbShareAccess -Name $MdtDepShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force
+            Grant-SmbShareAccess -Name $MdtBuildShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force | Out-Null
+            Grant-SmbShareAccess -Name $MdtDepShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force | Out-Null
 
             Write-Host "Setting File Permissions"
             icacls "$MdtBuildShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'

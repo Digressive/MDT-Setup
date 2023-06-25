@@ -1,6 +1,6 @@
 # MDT-Setup
 
-User configurable MDT setup script
+## User configurable MDT setup script
 
 For full change log and more information, [visit my site.](https://gal.vin/utils/mdt-setup/)
 
@@ -17,6 +17,13 @@ Please consider supporting my work:
 Please report any problems via the ‘issues’ tab on GitHub.
 
 -Mike
+
+## Features and Requirements
+
+* Designed to be run on Windows Server 2016+
+* The script must be run as an administrator.
+* The utility requires Windows PowerShell 5.0. (The built-in version of PowerShell)
+* Tested on Windows Server 2022.
 
 ## Usage Information
 
@@ -72,3 +79,39 @@ When you run the script it will ask you a series of questions to customise your 
 ```
 
 This will run the script, user interaction is required to continue.
+
+## Change Log
+
+### 2023-06-23: Version 23.06.23
+
+* Fixed an issue where the Windows ISO file name was hard coded.
+* Reordered the process so all the user interaction is done up front. When user interaction is complete, you will be told to go make coffee.
+* Cleaned up the output to be more readable.
+
+### 2022-12-02: Version 22.12.02
+
+* Added text notification when there is no update available.
+
+### 2022-11-29: Version 22.11.29
+
+* Added option to check for updates to the script.
+* Fixed permissions not being set on the build and deployment shares.
+* Script now asks for a domain group to be used for MDT Administrators.
+
+### 2022-10-18: Version 22.10.18
+
+* Added support for Windows 10 22H2
+
+### 2022-09-20: Version 22.09.20
+
+* Removed option to enter a key to download Windows as it isn't really needed. The provided generic key works just fine.
+* Removed option to choose the edition of Windows as it will become the version that the user is licensed for when activation occurs.
+
+### 2022-08-16: Version 22.08.16
+
+* Added support for Windows 11
+* Streamlined some locale options so the user isn't prompted so much for the same information.
+
+### 2022-07-26: Version 22.07.26
+
+* Initial release
