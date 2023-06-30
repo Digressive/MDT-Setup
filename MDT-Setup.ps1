@@ -34,6 +34,7 @@
 
     .DESCRIPTION
     Installs and configures MDT on a new domain joined server with an internet connection.
+    Fixes added from: https://metisit.com/blog/microsoft-deployment-toolkit-mdt-configuration-with-unforeseen-challenges/
 #>
 
 ## Set up command line switches.
@@ -237,9 +238,9 @@ else {
         ## URLs - shouldn't have to change these until MSFT release new versions
         $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
         $MdtExe = "MicrosoftDeploymentToolkit_x64.msi"
-        $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2120254" ## ADK 2004
+        $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2196127" ## ADK Win 11 22H2
         $AdkExe = "adksetup.exe"
-        $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2120253" ## ADK 2004 Win PE
+        $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2196224" ## ADK PE Add-on Win 11 22H2
         $AdkPeExe = "adkwinpesetup.exe"
         $MdtPatchSrc = "https://download.microsoft.com/download/3/0/6/306AC1B2-59BE-43B8-8C65-E141EF287A5E/KB4564442/MDT_KB4564442.exe" ## MDT Patch
         $MdtPatchExe = "MDT_KB4564442.exe"
@@ -358,6 +359,37 @@ else {
             ## Copying files to the MDT install folder
             Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x64\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x64"
             Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x86\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x86"
+
+            ## WinPE x86 Fix
+            New-Item -ItemType Directory -Path "$env:ProgramFiles (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs"
+
+            ## Scripting Error Fix
+            Rename-Item -Path "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Unattend_PE_x64.xml" -NewName "Unattend_PE_x64_backup.xml"
+            Add-Content -Path "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Unattend_PE_x64.xml" -Object '<unattend xmlns="urn:schemas-microsoft-com:unattend">
+            <settings pass="windowsPE">
+            <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+            <Display>
+            <ColorDepth>32</ColorDepth>
+            <HorizontalResolution>1024</HorizontalResolution>
+            <RefreshRate>60</RefreshRate>
+            <VerticalResolution>768</VerticalResolution>
+            </Display>
+            <RunSynchronous>
+            <RunSynchronousCommand wcm:action="add">
+            <Description>Lite Touch PE</Description>
+            <Order>1</Order>
+            <Path>reg.exe add "HKLM\Software\Microsoft\Internet Explorer\Main" /t REG_DWORD /v JscriptReplacement /d 0 /f</Path>
+            </RunSynchronousCommand>
+            <RunSynchronousCommand wcm:action="add">
+            <Description>Lite Touch PE</Description>
+            <Order>2</Order>
+            <Path>wscript.exe X:\Deploy\Scripts\LiteTouch.wsf</Path>
+            </RunSynchronousCommand>
+            </RunSynchronous>
+            </component>
+            </settings>
+            </unattend>
+            '
 
             ## Import MDT PowerShell
             Import-Module "$env:ProgramFiles\Microsoft Deployment Toolkit\bin\MicrosoftDeploymentToolkit.psd1"
