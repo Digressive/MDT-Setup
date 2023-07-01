@@ -304,23 +304,35 @@ else {
             {
                 Write-host "$MdtExe failed to download"
             }
+            else {
+                Write-host "$MdtExe downloaded"
+            }
 
             Invoke-WebRequest -uri $AdkSrc -Outfile "$PSScriptRoot\$AdkExe"
             If ((Test-Path -Path "$PSScriptRoot\$AdkExe") -eq $false)
             {
                 Write-host "$AdkExe failed to download"
             }
-            
+            else {
+                Write-host "$AdkExe downloaded"
+            }
+
             Invoke-WebRequest -uri $AdkPeSrc -Outfile "$PSScriptRoot\$AdkPeExe"
             If ((Test-Path -Path "$PSScriptRoot\$AdkPeExe") -eq $false)
             {
                 Write-host "$AdkPeExe failed to download"
             }
-            
+            else {
+                Write-host "$AdkPeExe downloaded"
+            }
+
             Invoke-WebRequest -uri $MdtPatchSrc -Outfile "$PSScriptRoot\$MdtPatchExe"
             If ((Test-Path -Path "$PSScriptRoot\$MdtPatchExe") -eq $false)
             {
                 Write-host "$MdtPatchExe failed to download"
+            }
+            else {
+                Write-host "$MdtPatchExe downloaded"
             }
 
             ## Installs
@@ -361,11 +373,11 @@ else {
             Copy-Item -Path "$PSScriptRoot\MDT_KB4564442\x86\*" -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Distribution\Tools\x86"
 
             ## WinPE x86 Fix
-            New-Item -ItemType Directory -Path "$env:ProgramFiles (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs"
+            New-Item -ItemType Directory -Path "$env:ProgramFiles (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\WinPE_OCs" | Out-Null
 
             ## Scripting Error Fix
             Rename-Item -Path "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Unattend_PE_x64.xml" -NewName "Unattend_PE_x64_backup.xml"
-            Add-Content -Path "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Unattend_PE_x64.xml" -Object '<unattend xmlns="urn:schemas-microsoft-com:unattend">
+            Add-Content -Path "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates\Unattend_PE_x64.xml" -Value '<unattend xmlns="urn:schemas-microsoft-com:unattend">
             <settings pass="windowsPE">
             <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
             <Display>
