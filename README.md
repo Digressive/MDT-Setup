@@ -82,6 +82,11 @@ This will run the script, user interaction is required to continue.
 
 ## Change Log
 
+### New
+
+* The latest version of the Windows ADK and Win PE ADK add-on are now installed
+* Added fixes for the latest version of Windows ADK from: https://metisit.com/blog/microsoft-deployment-toolkit-mdt-configuration-with-unforeseen-challenges
+
 ### 2023-06-23: Version 23.06.23
 
 * Fixed an issue where the Windows ISO file name was hard coded.
