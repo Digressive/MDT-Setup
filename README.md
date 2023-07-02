@@ -34,10 +34,10 @@ Here is what the script will do:
 1. Download the installers for Microsoft Deployment Toolkit, the latest MDT patch, the latest ADK and WinPE for ADK.
 2. Silently install all the above.
 3. Create an MDT deployment share for OS builds and the folder structure.
-4. Download Windows 10 from the Media Creation Tool (this requires some user input).
-5. Convert the Windows 10 install ESD to a WIM file for MDT and import it.
-6. Create Package folders and Selection Profiles for Windows 10.
-7. Import a Task Sequence template and create a build and capture Windows 10 Task Sequence.
+4. Download Windows 10/11 from the Media Creation Tool (this requires some user input).
+5. Convert the Windows 10/11 install ESD to a WIM file for MDT and import it.
+6. Create Package folders and Selection Profiles for Windows 10/11.
+7. Import a Task Sequence template and create a build and capture Windows 10/11 Task Sequence.
 8. Set the configuration of CustomSettings.ini for the "Build" share.
 9. Do some final configuration of the MDT "Build" share and generate the boot media.
 10. Create an MDT deployment share for the deployment of captured OS images and the folder structure.
@@ -46,7 +46,7 @@ Here is what the script will do:
 13. Set the configuration of CustomSettings.ini for the "Deploy" share.
 14. Do some final configuration of the MDT "Deploy" share and generate the boot media.
 
-When complete the server will be configured to "build and capture" a Windows 10 image. Once captured a user can then import the image into the Deployment share and create a Task Sequence using the template included.
+When complete the server will be configured to "build and capture" a Windows 10/11 image. Once captured a user can then import the image into the Deployment share and create a Task Sequence using the template included.
 
 Some user interaction is still required. For example: importing drivers, adding applications to the build and capture task sequence and other things specific to the images you want to make.
 
@@ -82,10 +82,10 @@ This will run the script, user interaction is required to continue.
 
 ## Change Log
 
-### New
+### 2023-07-02: Version 23.07.02
 
-* The latest version of the Windows ADK and Win PE ADK add-on are now installed
-* Added fixes for the latest version of Windows ADK from: https://metisit.com/blog/microsoft-deployment-toolkit-mdt-configuration-with-unforeseen-challenges
+* The latest version of the Windows ADK and Win PE ADK add-on are now installed. Please note that x86 boot media is now not available due to the new ADK not supporting the architecture.
+* Added fixes for the latest version of Windows ADK from: [metisit.com](https://metisit.com/blog/microsoft-deployment-toolkit-mdt-configuration-with-unforeseen-challenges)
 
 ### 2023-06-23: Version 23.06.23
 
