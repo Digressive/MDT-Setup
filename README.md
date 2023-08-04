@@ -82,6 +82,10 @@ This will run the script, user interaction is required to continue.
 
 ## Change Log
 
+### 2023-08-04: Version 23.08.04
+
+* Fixed an issue with the device path of a mounted ISO file being hardcoded. It is now dynamic.
+
 ### 2023-07-02: Version 23.07.02
 
 * The latest version of the Windows ADK and Win PE ADK add-on are now installed. Please note that x86 boot media is now not available due to the new ADK not supporting the architecture.

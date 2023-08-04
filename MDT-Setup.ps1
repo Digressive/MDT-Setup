@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 23.07.02
+.VERSION 23.08.04
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -52,13 +52,13 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 23.07.02            
+            Mike Galvin   https://gal.vin                  Version 23.08.04            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
 If ($UpdateCheck)
 {
-    $ScriptVersion = "23.07.02"
+    $ScriptVersion = "23.08.04"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
@@ -418,12 +418,13 @@ else {
                 ## Copy Source Files
                 Write-Host "Copying Windows source files"
                 Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter | Out-Null
-                Copy-Item -Path \\.\CDROM1\ -Destination $PSScriptRoot\$WinCode -Recurse
+                $ISOPath = Get-DiskImage "$PSScriptRoot\$WinFileName" | Select-Object DevicePath -ExpandProperty DevicePath
+                Copy-Item -Path "$ISOPath\" -Destination "$PSScriptRoot\$WinSrcPath" -Recurse
                 Dismount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" | Out-Null
 
                 ## Convert ESD to WIM
                 Write-Host "Converting ESD to WIM"
-                DISM /export-image /SourceImageFile:$PSScriptRoot\$WinCode\sources\install.esd /SourceIndex:3 /DestinationImageFile:$PSScriptRoot\$WinCode\sources\install.wim /Compress:max /CheckIntegrity
+                Export-WindowsImage -SourceImagePath "$PSScriptRoot\$WinCode\sources\install.esd" -SourceIndex "3" -DestinationImagePath "$PSScriptRoot\$WinCode\sources\install.wim" -CompressionType maximum | Out-Null
                 Remove-Item -Path $PSScriptRoot\$WinCode\sources\install.esd -Force
             }
 
