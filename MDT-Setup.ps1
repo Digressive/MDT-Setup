@@ -277,7 +277,7 @@ else {
 
             If ($ConvertESD -eq "y")
             {
-                $WinFileName = Read-Host -Prompt "Enter the name of the Windows iso file that you downloaded (default: windows.iso)"
+                $WinFileName = Read-Host -Prompt "Enter the name of the Windows iso file that you downloaded (default: Windows.iso)"
                 If ($WinFileName -eq '')
                 {
                     $WinFileName = "Windows.iso" ## The name of the Windows iso that will be downloaded via Media Creation Tool
