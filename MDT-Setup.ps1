@@ -419,7 +419,7 @@ else {
                 Write-Host "Copying Windows source files"
                 Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter | Out-Null
                 $ISOPath = Get-DiskImage "$PSScriptRoot\$WinFileName" | Select-Object DevicePath -ExpandProperty DevicePath
-                Copy-Item -Path "$ISOPath\" -Destination "$PSScriptRoot\$WinSrcPath" -Recurse
+                Copy-Item -Path "$ISOPath\" -Destination "$PSScriptRoot\$WinCode" -Recurse
                 Dismount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" | Out-Null
 
                 ## Convert ESD to WIM
