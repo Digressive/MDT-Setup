@@ -22,7 +22,7 @@ Please report any problems via the ‘issues’ tab on GitHub.
 
 * Designed to be run on Windows Server 2016+
 * The script must be run as an administrator.
-* The utility requires Windows PowerShell 5.0. (The built-in version of PowerShell)
+* Tested with Windows PowerShell 5 (The version of PowerShell included with Windows Server 2022) and PowerShell 7.
 * Tested on Windows Server 2022.
 
 ## Usage Information
