@@ -259,7 +259,7 @@ else {
         If ($ConvertESD -eq "y")
         {
             ## Download OS
-            Write-Host "Downloading Windows iso"
+            Write-Host "Downloading Windows Media Creation Tool"
             Invoke-WebRequest -uri $MctSrc -Outfile "$PSScriptRoot\$MctExe"
             If ((Test-Path -Path "$PSScriptRoot\$MctExe") -eq $false)
             {
