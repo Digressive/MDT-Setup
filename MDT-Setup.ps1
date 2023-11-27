@@ -82,6 +82,7 @@ If ($Help)
     You will need to know the following information:
     * Windows version to deploy
     * Windows language
+    * Whether you want to build a gold image or not
     * Build share path and name
     * Deploy share path and name
     * Time zone name
@@ -137,17 +138,27 @@ else {
             }
         }
 
-        ## Share names and paths
-        $MdtBuildShare = Read-Host -Prompt "Enter the local path of the Build share (default: C:\BuildShare)"
-        If ($MdtBuildShare -eq '')
+        ## Choice of DD (Y) or Gold Image (N)
+        $GoldDeploy = Read-Host -Prompt "Do you want to make a gold image or just directly deploy Windows? (y/N)"
+        If ($GoldDeploy -eq '')
         {
-            $MdtBuildShare = "C:\BuildShare" ## Local path of the Build share
+            $GoldDeploy = "n"
         }
 
-        $MdtBuildShareName = Read-Host -Prompt "Enter the share name of the Build share (default: BuildShare$)"
-        If ($MdtBuildShareName -eq '')
+        If ($GoldDeploy -eq "y")
         {
-            $MdtBuildShareName = "BuildShare$" ## Share name of the Build share
+            ## Share names and paths
+            $MdtBuildShare = Read-Host -Prompt "Enter the local path of the Build share (default: C:\BuildShare)"
+            If ($MdtBuildShare -eq '')
+            {
+                $MdtBuildShare = "C:\BuildShare" ## Local path of the Build share
+            }
+
+            $MdtBuildShareName = Read-Host -Prompt "Enter the share name of the Build share (default: BuildShare$)"
+            If ($MdtBuildShareName -eq '')
+            {
+                $MdtBuildShareName = "BuildShare$" ## Share name of the Build share
+            }
         }
 
         $MdtDepShare = Read-Host -Prompt "Enter the local path of the Deployment share (default: C:\DeployShare)"
@@ -209,8 +220,11 @@ else {
             Write-Host -Object "        Windows language to download : $LangCode"
         }
 
-        Write-Host -Object "        Build share path: $MdtBuildShare
-        Build share name: $MdtBuildShareName
+        If ($GoldDeploy -eq "y")
+        {
+            Write-Host -Object "        Build share path: $MdtBuildShare"
+        }
+        Write-Host -Object "        Build share name: $MdtBuildShareName
         Deploy share path: $MdtDepShare
         Deploy share name: $MdtDepShareName
         Time zone name: $TZName
@@ -406,105 +420,108 @@ else {
             ## Import MDT PowerShell
             Import-Module "$env:ProgramFiles\Microsoft Deployment Toolkit\bin\MicrosoftDeploymentToolkit.psd1"
 
-            ## Build Share
-            ## Create Build Share
-            Write-Host "Creating Build Share"
-            New-Item -Path "$MdtBuildShare" -ItemType Directory | Out-Null
-            New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess Administrators | Out-Null
-            New-PSDrive -Name "DS001" -PSProvider "MDTProvider" -Root "$MdtBuildShare" -Description "MDT Build Share" -NetworkPath "\\$env:ComputerName\$MdtBuildShareName" | Add-MDTPersistentDrive | Out-Null
-
-            If ($ConvertESD -eq "y")
+            If ($GoldDeploy -eq "y")
             {
-                ## Copy Source Files
-                Write-Host "Copying Windows source files"
-                Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter | Out-Null
-                $ISOPath = Get-DiskImage "$PSScriptRoot\$WinFileName" | Select-Object DevicePath -ExpandProperty DevicePath
-                Copy-Item -Path "$ISOPath\" -Destination "$PSScriptRoot\$WinCode" -Recurse
-                Dismount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" | Out-Null
+                ## Build Share
+                ## Create Build Share
+                Write-Host "Creating Build Share"
+                New-Item -Path "$MdtBuildShare" -ItemType Directory | Out-Null
+                New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess Administrators | Out-Null
+                New-PSDrive -Name "DS001" -PSProvider "MDTProvider" -Root "$MdtBuildShare" -Description "MDT Build Share" -NetworkPath "\\$env:ComputerName\$MdtBuildShareName" | Add-MDTPersistentDrive | Out-Null
 
-                ## Convert ESD to WIM
-                Write-Host "Converting ESD to WIM"
-                Export-WindowsImage -SourceImagePath "$PSScriptRoot\$WinCode\sources\install.esd" -SourceIndex "3" -DestinationImagePath "$PSScriptRoot\$WinCode\sources\install.wim" -CompressionType maximum | Out-Null
-                Remove-Item -Path $PSScriptRoot\$WinCode\sources\install.esd -Force
-            }
-
-            ## Add to MDT
-            New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory | Out-Null
-
-            If ($ConvertESD -eq "y")
-            {
-                Write-Host "Importing Windows to MDT"
-                Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode" | Out-Null
-                $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
-                ForEach ($WimFile in $WimFiles)
+                If ($ConvertESD -eq "y")
                 {
-                    Rename-Item -Path "DS001:\Operating Systems\$WinCode\*.wim" -NewName "$WinCode.wim"
+                    ## Copy Source Files
+                    Write-Host "Copying Windows source files"
+                    Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter | Out-Null
+                    $ISOPath = Get-DiskImage "$PSScriptRoot\$WinFileName" | Select-Object DevicePath -ExpandProperty DevicePath
+                    Copy-Item -Path "$ISOPath\" -Destination "$PSScriptRoot\$WinCode" -Recurse
+                    Dismount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" | Out-Null
+
+                    ## Convert ESD to WIM
+                    Write-Host "Converting ESD to WIM"
+                    Export-WindowsImage -SourceImagePath "$PSScriptRoot\$WinCode\sources\install.esd" -SourceIndex "3" -DestinationImagePath "$PSScriptRoot\$WinCode\sources\install.wim" -CompressionType maximum | Out-Null
+                    Remove-Item -Path $PSScriptRoot\$WinCode\sources\install.esd -Force
                 }
+
+                ## Add to MDT
+                New-Item -Path "DS001:\Operating Systems\$WinCode" -ItemType Directory | Out-Null
+
+                If ($ConvertESD -eq "y")
+                {
+                    Write-Host "Importing Windows to MDT"
+                    Import-MDTOperatingSystem -Path "DS001:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode" | Out-Null
+                    $WimFiles = Get-ChildItem -Path "DS001:\Operating Systems\$WinCode\*.wim"
+                    ForEach ($WimFile in $WimFiles)
+                    {
+                        Rename-Item -Path "DS001:\Operating Systems\$WinCode\*.wim" -NewName "$WinCode.wim"
+                    }
+                }
+
+                ## Packages and Selection Profiles
+                Write-Host "Creating selection profile"
+                New-Item -Path "DS001:\Packages\$WinCode" -ItemType Directory | Out-Null
+                New-Item -Path "DS001:\Selection Profiles" -enable "True" -Name "$WinCode" -Comments "" -Definition "<SelectionProfile><Include path=`"Packages\$WinCode`" /></SelectionProfile>" -ReadOnly "False" | Out-Null
+
+                ## New TS From Template
+                Write-Host "Downloading Build Task Sequence template"
+                Invoke-WebRequest -uri "https://raw.githubusercontent.com/Digressive/MDT-Files/master/MDT-Templates/Client-Build-Template.xml" -Outfile "$MdtBuildShare\Templates\Client-Build-Template.xml"
+
+                If ($ConvertESD -eq "y")
+                {
+                    Write-Host "Creating Build Task Sequence"
+                    Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\$WinCode.wim" -FullName "user" -OrgName "org" -HomePage "about:blank" | Out-Null
+                }
+
+                ## MDT configuration
+                ## Build share CustomSettings.ini
+                Write-Host "Backing up original CustomSettings.ini"
+                Rename-Item -Path $MdtBuildShare\Control\CustomSettings.ini -NewName CustomSettings-OgBackup.ini
+                Write-Host "Creating custom CustomSettings.ini"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Settings]"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Priority=Default"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Properties=MyCustomProperty"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value ""
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Default]"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "OSInstall=Y"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipCapture=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipAdminPassword=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipProductKey=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipComputerBackup=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipBitLocker=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipLocaleSelection=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipTimeZone=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipDomainMembership=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipSummary=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipFinalSummary=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipComputerName=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipUserData=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value ""
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "_SMSTSORGNAME=Build Share"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "_SMSTSPackageName=%TaskSequenceName%"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "DoCapture=YES"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value 'BackupFile=%TaskSequenceID%_#year(date) & "-" & month(date) & "-" & day(date) & "-" & hour(time) & "-" & minute(time)#.wim'
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+
+                If ($UseWSUS -eq "y")
+                {
+                    Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "WSUSServer=http://$WsusServer"
+                }
+
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "FinishAction=SHUTDOWN"
+
+                ## Change MDT config to disable x86 support for boot media
+                Write-Host "Configuring MDT"
+                $XMLContent = Get-Content "$MdtBuildShare\Control\Settings.xml"
+                $XMLContent = $XMLContent -Replace '<SupportX86>True</SupportX86>','<SupportX86>False</SupportX86>'
+                $XMLContent | Out-File "$MdtBuildShare\Control\Settings.xml"
+
+                ## Update Build share to generate boot media
+                Write-Host "Updating Build share and generating boot media"
+                Update-MDTDeploymentShare -path "DS001:" -Force | Out-Null
             }
-
-            ## Packages and Selection Profiles
-            Write-Host "Creating selection profile"
-            New-Item -Path "DS001:\Packages\$WinCode" -ItemType Directory | Out-Null
-            New-Item -Path "DS001:\Selection Profiles" -enable "True" -Name "$WinCode" -Comments "" -Definition "<SelectionProfile><Include path=`"Packages\$WinCode`" /></SelectionProfile>" -ReadOnly "False" | Out-Null
-
-            ## New TS From Template
-            Write-Host "Downloading Build Task Sequence template"
-            Invoke-WebRequest -uri "https://raw.githubusercontent.com/Digressive/MDT-Files/master/MDT-Templates/Client-Build-Template.xml" -Outfile "$MdtBuildShare\Templates\Client-Build-Template.xml"
-
-            If ($ConvertESD -eq "y")
-            {
-                Write-Host "Creating Build Task Sequence"
-                Import-MdtTaskSequence -Path "DS001:\Task Sequences" -Name "Build $WinCode" -Template "Client-Build-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS001:\Operating Systems\$WinCode\$WinCode.wim" -FullName "user" -OrgName "org" -HomePage "about:blank" | Out-Null
-            }
-
-            ## MDT configuration
-            ## Build share CustomSettings.ini
-            Write-Host "Backing up original CustomSettings.ini"
-            Rename-Item -Path $MdtBuildShare\Control\CustomSettings.ini -NewName CustomSettings-OgBackup.ini
-            Write-Host "Creating custom CustomSettings.ini"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Settings]"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Priority=Default"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "Properties=MyCustomProperty"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value ""
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "[Default]"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "OSInstall=Y"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipCapture=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipAdminPassword=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipProductKey=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipComputerBackup=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipBitLocker=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipLocaleSelection=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipTimeZone=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipDomainMembership=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipSummary=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipFinalSummary=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipComputerName=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SkipUserData=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value ""
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "_SMSTSORGNAME=Build Share"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "_SMSTSPackageName=%TaskSequenceName%"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "DoCapture=YES"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value 'BackupFile=%TaskSequenceID%_#year(date) & "-" & month(date) & "-" & day(date) & "-" & hour(time) & "-" & minute(time)#.wim'
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
-
-            If ($UseWSUS -eq "y")
-            {
-                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "WSUSServer=http://$WsusServer"
-            }
-
-            Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "FinishAction=SHUTDOWN"
-
-            ## Change MDT config to disable x86 support for boot media
-            Write-Host "Configuring MDT"
-            $XMLContent = Get-Content "$MdtBuildShare\Control\Settings.xml"
-            $XMLContent = $XMLContent -Replace '<SupportX86>True</SupportX86>','<SupportX86>False</SupportX86>'
-            $XMLContent | Out-File "$MdtBuildShare\Control\Settings.xml"
-
-            ## Update Build share to generate boot media
-            Write-Host "Updating Build share and generating boot media"
-            Update-MDTDeploymentShare -path "DS001:" -Force | Out-Null
 
             ## Deployment Share
             ## Create Deployment Share
@@ -512,6 +529,38 @@ else {
             New-Item -Path "$MdtDepShare" -ItemType Directory | Out-Null
             New-SmbShare -Name "$MdtDepShareName" -Path "$MdtDepShare" -FullAccess Administrators | Out-Null
             New-PSDrive -Name "DS002" -PSProvider "MDTProvider" -Root "$MdtDepShare" -Description "MDT Deploy Share" -NetworkPath "\\$env:ComputerName\$MdtDepShareName" | Add-MDTPersistentDrive | Out-Null
+
+            If ($GoldDeploy -eq "n")
+            {
+                If ($ConvertESD -eq "y")
+                {
+                    ## Copy Source Files
+                    Write-Host "Copying Windows source files"
+                    Mount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" -NoDriveLetter | Out-Null
+                    $ISOPath = Get-DiskImage "$PSScriptRoot\$WinFileName" | Select-Object DevicePath -ExpandProperty DevicePath
+                    Copy-Item -Path "$ISOPath\" -Destination "$PSScriptRoot\$WinCode" -Recurse
+                    Dismount-DiskImage -ImagePath "$PSScriptRoot\$WinFileName" | Out-Null
+
+                    ## Convert ESD to WIM
+                    Write-Host "Converting ESD to WIM"
+                    Export-WindowsImage -SourceImagePath "$PSScriptRoot\$WinCode\sources\install.esd" -SourceIndex "3" -DestinationImagePath "$PSScriptRoot\$WinCode\sources\install.wim" -CompressionType maximum | Out-Null
+                    Remove-Item -Path $PSScriptRoot\$WinCode\sources\install.esd -Force
+                }
+
+                ## Add to MDT
+                New-Item -Path "DS002:\Operating Systems\$WinCode" -ItemType Directory | Out-Null
+
+                If ($ConvertESD -eq "y")
+                {
+                    Write-Host "Importing Windows to MDT"
+                    Import-MDTOperatingSystem -Path "DS002:\Operating Systems\$WinCode" -SourcePath $PSScriptRoot\$WinCode -DestinationFolder "$WinCode" | Out-Null
+                    $WimFiles = Get-ChildItem -Path "DS002:\Operating Systems\$WinCode\*.wim"
+                    ForEach ($WimFile in $WimFiles)
+                    {
+                        Rename-Item -Path "DS002:\Operating Systems\$WinCode\*.wim" -NewName "$WinCode.wim"
+                    }
+                }
+            }
 
             ## Packages, Drivers and Selection Profiles
             Write-Host "Creating selection profiles, package and driver folder structure"
@@ -527,6 +576,15 @@ else {
             ## New TS From Template
             Write-Host "Downloading Deploy Task Sequence template"
             Invoke-WebRequest -uri "https://raw.githubusercontent.com/Digressive/MDT-Files/master/MDT-Templates/Client-Deploy-Template.xml" -Outfile "$MdtDepShare\Templates\Client-Deploy-Template.xml"
+
+            If ($GoldDeploy -eq "n")
+            {
+                If ($ConvertESD -eq "y")
+                {
+                    Write-Host "Creating Deploy Task Sequence"
+                    Import-MdtTaskSequence -Path "DS002:\Task Sequences" -Name "Deploy $WinCode" -Template "Client-Deploy-Template.xml" -Comments "" -ID "$WinCode" -Version "1.0" -OperatingSystemPath "DS002:\Operating Systems\$WinCode\$WinCode.wim" -FullName "user" -OrgName "org" -HomePage "about:blank" | Out-Null
+                }
+            }
 
             ## Deploy share CustomSettings.ini
             Write-Host "Backing up original CustomSettings.ini"
@@ -605,11 +663,19 @@ else {
 
             ## Set Permissions
             Write-Host "Setting Share Permissions"
-            Grant-SmbShareAccess -Name $MdtBuildShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force | Out-Null
+            If ($GoldDeploy -eq "y")
+            {
+                Grant-SmbShareAccess -Name $MdtBuildShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force | Out-Null
+            }
+
             Grant-SmbShareAccess -Name $MdtDepShareName -AccountName "$DomainName\$MDTAdminGrp" -AccessRight Full -Force | Out-Null
 
             Write-Host "Setting File Permissions"
-            icacls "$MdtBuildShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
+            If ($GoldDeploy -eq "y")
+            {
+                icacls "$MdtBuildShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
+            }
+
             icacls "$MdtDepShare" /grant $DomainName\$MDTAdminGrp':(OI)(CI)(F)'
 
             Write-Host "Finished!"

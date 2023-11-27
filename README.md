@@ -22,7 +22,7 @@ Please report any problems via the ‘issues’ tab on GitHub.
 
 * Designed to be run on Windows Server 2016+
 * The script must be run as an administrator.
-* Tested with Windows PowerShell 5 (The version of PowerShell included with Windows Server 2022) and PowerShell 7.
+* Tested with Windows PowerShell 5 (The version of PowerShell included with Windows Server 2016+) and PowerShell 7.
 * Tested on Windows Server 2022.
 
 ## Usage Information
@@ -33,22 +33,18 @@ Here is what the script will do:
 
 1. Download the installers for Microsoft Deployment Toolkit, the latest MDT patch, the latest ADK and WinPE for ADK.
 2. Silently install all the above.
-3. Create an MDT deployment share for OS builds and the folder structure.
+3. Create an MDT deployment share(s) and the folder structure.
 4. Download Windows 10/11 from the Media Creation Tool (this requires some user input).
 5. Convert the Windows 10/11 install ESD to a WIM file for MDT and import it.
 6. Create Package folders and Selection Profiles for Windows 10/11.
-7. Import a Task Sequence template and create a build and capture Windows 10/11 Task Sequence.
-8. Set the configuration of CustomSettings.ini for the "Build" share.
-9. Do some final configuration of the MDT "Build" share and generate the boot media.
-10. Create an MDT deployment share for the deployment of captured OS images and the folder structure.
-11. Create Package and Driver folders and Selection Profiles for captured images.
-12. Import a Task Sequence template for future deployments. This template has the "total control" driver configuration already baked in.
-13. Set the configuration of CustomSettings.ini for the "Deploy" share.
-14. Do some final configuration of the MDT "Deploy" share and generate the boot media.
+7. Import Task Sequence templates.
+8. Set the configuration of CustomSettings.ini for the share(s).
+9. Generate the boot media.
+10. Create Package and Driver folders and Selection Profiles.
 
-When complete the server will be configured to "build and capture" a Windows 10/11 image. Once captured a user can then import the image into the Deployment share and create a Task Sequence using the template included.
+When complete the server will be configured to be able to deploy a Windows 10/11 image. There is an option to create a "Build and Capture" environment to create a gold image for Windows 10/11. Once captured the image can then be imported into the Deployment share and create a Task Sequence using the template included.
 
-Some user interaction is still required. For example: importing drivers, adding applications to the build and capture task sequence and other things specific to the images you want to make.
+Some user interaction is still required. For example: importing drivers, adding applications and other things specific to the images you want to deploy.
 
 ## User Preferences
 
@@ -56,8 +52,8 @@ When you run the script it will ask you a series of questions to customise your 
 
 * Windows version and update code (eg. W10-22H2)
 * Download and convert Windows ESD, edition, language
-* Build share path (eg. C:\BuildShare)
-* Build share name (eg. BuildShare$)
+* Optional Build share path (eg. C:\BuildShare)
+* Optional Build share name (eg. BuildShare$)
 * Deploy share path (eg. C:\DeployShare)
 * Deploy share name (eg. DeployShare$)
 * Time zone name for the deployed image (eg. GMT Standard Time)
@@ -74,8 +70,11 @@ When you run the script it will ask you a series of questions to customise your 
 
 ## Example
 
+From PowerShell:
+
 ``` txt
-[path\]MDT-Setup.ps1
+cd [path to script]
+.\MDT-Setup.ps1
 ```
 
 This will run the script, user interaction is required to continue.
