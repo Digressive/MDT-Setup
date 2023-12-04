@@ -68,18 +68,24 @@ When you run the script it will ask you a series of questions to customise your 
 * OU for new PC account (eg. OU=PCs,DC=contoso,DC=com)
 * WSUS server name and port (eg. WSUS-Srv:8530)
 
-## Example
+## How to Run
 
-From PowerShell:
+Create a folder on a local disk and put the script inside it.
+
+Run From PowerShell:
 
 ``` txt
-cd [path to script]
-.\MDT-Setup.ps1
+[path to script]\MDT-Setup.ps1
 ```
 
 This will run the script, user interaction is required to continue.
 
 ## Change Log
+
+### 2023-12-xx: Version 23.12.xx
+
+* Update Windows 11 MCT to version 23H2
+* Added option to create a single deployment share for those who do not want to build a gold image
 
 ### 2023-08-04: Version 23.08.04
 
