@@ -139,7 +139,7 @@ else {
         }
 
         ## Choice of DD (Y) or Gold Image (N)
-        $GoldDeploy = Read-Host -Prompt "Do you want to make a gold image? Choosing no will setup MDT to just deploy Windows. (y/N)"
+        $GoldDeploy = Read-Host -Prompt "Do you want to build a gold image? Choosing No will setup MDT with a single deployment share to just deploy Windows. (y/N)"
         If ($GoldDeploy -eq '')
         {
             $GoldDeploy = "n"
