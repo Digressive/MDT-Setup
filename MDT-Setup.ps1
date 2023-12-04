@@ -261,8 +261,8 @@ else {
 
         If ($WinVer -eq "y")
         {
-            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11
-            $MctExe = "MediaCreationToolW11.exe"
+            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11 23H2
+            $MctExe = "MediaCreationToolW1123H2.exe"
         }
 
         else {
