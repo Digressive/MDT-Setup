@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 23.08.04
+.VERSION 23.12.04
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -52,13 +52,13 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 23.08.04            
+            Mike Galvin   https://gal.vin                  Version 23.12.04            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
 If ($UpdateCheck)
 {
-    $ScriptVersion = "23.08.04"
+    $ScriptVersion = "23.12.04"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck

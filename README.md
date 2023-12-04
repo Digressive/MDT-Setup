@@ -82,10 +82,10 @@ This will run the script, user interaction is required to continue.
 
 ## Change Log
 
-### 2023-12-xx: Version 23.12.xx
+### 2023-12-04: Version 23.12.04
 
-* Update Windows 11 MCT to version 23H2
-* Added option to create a single deployment share for those who do not want to build a gold image
+* Added option to create a single deployment share for those who do not want to build a gold image.
+* Updated Windows 11 Media Creation Tool link to get version 23H2.
 
 ### 2023-08-04: Version 23.08.04
 
