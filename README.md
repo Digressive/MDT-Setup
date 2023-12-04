@@ -68,7 +68,7 @@ When you run the script it will ask you a series of questions to customise your 
 * OU for new PC account (eg. OU=PCs,DC=contoso,DC=com)
 * WSUS server name and port (eg. WSUS-Srv:8530)
 
-## How to Run
+## How to use
 
 Create a folder on a local disk and put the script inside it.
 
