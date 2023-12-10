@@ -82,6 +82,10 @@ This will run the script, user interaction is required to continue.
 
 ## Change Log
 
+### 2023-12-10: Version 23.12.10
+
+* Added a leading '0' to the dates in the names of the 'Logs' and 'DyanamicLogs' inside the deployment shares.
+
 ### 2023-12-04: Version 23.12.04
 
 * Added option to create a single deployment share for those who do not want to build a gold image.

@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 23.12.04
+.VERSION 23.12.10
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -52,13 +52,13 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 23.12.04            
+            Mike Galvin   https://gal.vin                  Version 23.12.10            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
 If ($UpdateCheck)
 {
-    $ScriptVersion = "23.12.04"
+    $ScriptVersion = "23.12.10"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
@@ -502,10 +502,10 @@ else {
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "DoCapture=YES"
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value 'BackupFile=%TaskSequenceID%_#year(date) & "-" & month(date) & "-" & day(date) & "-" & hour(time) & "-" & minute(time)#.wim'
-                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
-                #Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#Right('0' & year(date), 4) & `"-`" & Right('0' & month(date), 2) & `"-`" & Right('0' & day(date), 2) & `"_`" & Right('0' & hour(time), 2) & `"-`" & Right('0' & minute(time), 2)#"
-                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
-                #Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#Right('0' & year(date), 4) & `"-`" & Right('0' & month(date), 2) & `"-`" & Right('0' & day(date), 2) & `"_`" & Right('0' & hour(time), 2) & `"-`" & Right('0' & minute(time), 2)#"
+                #Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#Right(0 & year(date), 4) & `"-`" & Right(0 & month(date), 2) & `"-`" & Right(0 & day(date), 2) & `"_`" & Right(0 & hour(time), 2) & `"-`" & Right(0 & minute(time), 2)#"
+                #Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+                Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#Right(0 & year(date), 4) & `"-`" & Right(0 & month(date), 2) & `"-`" & Right(0 & day(date), 2) & `"_`" & Right(0 & hour(time), 2) & `"-`" & Right(0 & minute(time), 2)#"
 
                 If ($UseWSUS -eq "y")
                 {
@@ -638,8 +638,11 @@ else {
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipSummary=YES"
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SkipFinalSummary=YES"
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "FinishAction=SHUTDOWN"
-            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtDepShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
-            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtDepShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+            #Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtDepShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtDepShareName\Logs\#Right(0 & year(date), 4) & `"-`" & Right(0 & month(date), 2) & `"-`" & Right(0 & day(date), 2) & `"_`" & Right(0 & hour(time), 2) & `"-`" & Right(0 & minute(time), 2)#"
+            #Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtDepShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+            Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtDepShareName\DynamicLogs\#Right(0 & year(date), 4) & `"-`" & Right(0 & month(date), 2) & `"-`" & Right(0 & day(date), 2) & `"_`" & Right(0 & hour(time), 2) & `"-`" & Right(0 & minute(time), 2)#"
+
             Add-Content -Path $MdtDepShare\Control\CustomSettings.ini -Value ""
 
             If ($UseWSUS -eq "y")
