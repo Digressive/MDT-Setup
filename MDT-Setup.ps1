@@ -503,7 +503,9 @@ else {
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "ComputerBackupLocation=\\$env:ComputerName\$MdtBuildShareName\Captures"
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value 'BackupFile=%TaskSequenceID%_#year(date) & "-" & month(date) & "-" & day(date) & "-" & hour(time) & "-" & minute(time)#.wim'
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+                #Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShare=\\$env:ComputerName\$MdtBuildShareName\Logs\#Right('0' & year(date), 4) & `"-`" & Right('0' & month(date), 2) & `"-`" & Right('0' & day(date), 2) & `"_`" & Right('0' & hour(time), 2) & `"-`" & Right('0' & minute(time), 2)#"
                 Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#year(date) & `"-`" & month(date) & `"-`" & day(date) & `"_`" & hour(time) & `"-`" & minute(time)#"
+                #Add-Content -Path $MdtBuildShare\Control\CustomSettings.ini -Value "SLShareDynamicLogging=\\$env:ComputerName\$MdtBuildShareName\DynamicLogs\#Right('0' & year(date), 4) & `"-`" & Right('0' & month(date), 2) & `"-`" & Right('0' & day(date), 2) & `"_`" & Right('0' & hour(time), 2) & `"-`" & Right('0' & minute(time), 2)#"
 
                 If ($UseWSUS -eq "y")
                 {
