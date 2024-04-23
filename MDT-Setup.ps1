@@ -59,7 +59,7 @@ Param(
 If ($UpdateCheck)
 {
     $ScriptVersion = "23.12.10"
-    $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
+    $RawSource = "https://raw.githubusercontent.com/joeymeijer/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
     If ($null -eq $VerCheck)
