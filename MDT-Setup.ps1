@@ -361,6 +361,8 @@ else {
             Write-Host "Installing ADK-WinPE"
             try {
                 Start-Process $PSScriptRoot\adkwinpesetup.exe -ArgumentList "/features + /q" -Wait
+                #Fix for USB Media with drivers "Cannot open WIM file"
+                copy-item "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\amd64\*" -destination "C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Windows Preinstallation Environment\x86\"
             }
             catch {
                 Write-host "ADK-WinPE failed to install"
