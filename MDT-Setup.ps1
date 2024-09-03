@@ -12,7 +12,7 @@
 
 .TAGS Microsoft Deployment Toolkit Install
 
-.LICENSEURI
+.LICENSEURI https://github.com/Digressive/MDT-Setup?tab=MIT-1-ov-file
 
 .PROJECTURI https://gal.vin/utils/mdt-setup
 
