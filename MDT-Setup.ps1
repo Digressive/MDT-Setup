@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 23.12.10
+.VERSION 24.12.10
 
 .GUID fbe115c8-16db-441c-805a-5505f93eb012
 
@@ -52,13 +52,13 @@ Param(
     | ||_|| ||       |  |   |          _____| ||   |___   |   |  |       ||   |        
     |_|   |_||______|   |___|         |_______||_______|  |___|  |_______||___|        
                                                                                        
-            Mike Galvin   https://gal.vin                  Version 23.12.10            
+            Mike Galvin   https://gal.vin                  Version 24.12.10            
       Donate: https://www.paypal.me/digressive            See -help for usage          
 "
 
 If ($UpdateCheck)
 {
-    $ScriptVersion = "23.12.10"
+    $ScriptVersion = "24.12.10"
     $RawSource = "https://raw.githubusercontent.com/Digressive/MDT-Setup/main/MDT-Setup.ps1"
     $SourceCheck = Invoke-RestMethod -uri "$RawSource"
     $VerCheck = Select-String -Pattern ".VERSION $ScriptVersion" -InputObject $SourceCheck
@@ -112,7 +112,7 @@ else {
         $WinCode = Read-Host -Prompt "Enter Windows version and update that you will be deploying. This will be used as a unique identifier for MDT. (default: W10-22H2)"
         If ($WinCode -eq '')
         {
-            $WinCode = "W10-22H2" ## Windows version and update
+            $WinCode = "W11-24H2" ## Windows version and update
         }
 
         ## Windows Download Preferences
@@ -125,7 +125,7 @@ else {
 
         If ($ConvertESD -eq "y")
         {
-            $WinVer = Read-Host -Prompt "Do you want to deploy Windows 11? (y/N)"
+            $WinVer = Read-Host -Prompt "Do you want to deploy Windows 10? (y/N)"
             If ($WinVer -eq '')
             {
                 $WinVer = "n"
@@ -252,22 +252,22 @@ else {
         ## URLs - shouldn't have to change these until MSFT release new versions
         $MdtSrc = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi" ## MDT main package
         $MdtExe = "MicrosoftDeploymentToolkit_x64.msi"
-        $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2196127" ## ADK Win 11 22H2
+        $AdkSrc = "https://go.microsoft.com/fwlink/?linkid=2289980" ## ADK 10.1.26100.2454 (December 2024)
         $AdkExe = "adksetup.exe"
-        $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2196224" ## ADK PE Add-on Win 11 22H2
+        $AdkPeSrc = "https://go.microsoft.com/fwlink/?linkid=2289981" ## ADK PE 10.1.26100.2454 (December 2024)
         $AdkPeExe = "adkwinpesetup.exe"
         $MdtPatchSrc = "https://download.microsoft.com/download/3/0/6/306AC1B2-59BE-43B8-8C65-E141EF287A5E/KB4564442/MDT_KB4564442.exe" ## MDT Patch
         $MdtPatchExe = "MDT_KB4564442.exe"
 
         If ($WinVer -eq "y")
         {
-            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11 23H2
-            $MctExe = "MediaCreationToolW1123H2.exe"
+            $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
+            $MctExe = "MediaCreationTool22H2.exe"
         }
 
         else {
-            $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
-            $MctExe = "MediaCreationTool22H2.exe"
+            $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11 24H2
+            $MctExe = "MediaCreationToolW1124H2.exe"
         }
 
         If ($ConvertESD -eq "y")

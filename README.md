@@ -14,7 +14,7 @@ Please consider supporting my work:
 * Support with [Github Sponsors](https://github.com/sponsors/Digressive).
 * Support with a one-time donation using [PayPal](https://www.paypal.me/digressive).
 
-Please report any problems via the ‘issues’ tab on GitHub.
+Please report any problems via the [issues](https://github.com/Digressive/MDT-Setup/issues) tab on GitHub.
 
 -Mike
 
@@ -81,6 +81,11 @@ Run From PowerShell:
 This will run the script, user interaction is required to continue.
 
 ## Change Log
+
+### 2024-12-10: Version 24.12.10
+
+* Updated download links for the ADK to the latest December 2024 versions which work fully with Windows 11 24H2.
+* Changed Default Windows to Windows 11 - Windows 10 still an option.
 
 ### 2023-12-10: Version 23.12.10
 
