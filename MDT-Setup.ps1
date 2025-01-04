@@ -264,8 +264,7 @@ else {
             $MctSrc = "https://go.microsoft.com/fwlink/?LinkId=691209" ## Media Creation Tool for Windows 10
             $MctExe = "MediaCreationTool22H2.exe"
         }
-
-        else {
+		else {
             $MctSrc = "https://go.microsoft.com/fwlink/?linkid=2156295" ## Media Creation Tool for Windows 11 24H2
             $MctExe = "MediaCreationToolW1124H2.exe"
         }
@@ -418,6 +417,7 @@ else {
             '
 
             ## Import MDT PowerShell
+			Write-Host "Import Module MicrosoftDeploymentToolkit.psd1"
             Import-Module "$env:ProgramFiles\Microsoft Deployment Toolkit\bin\MicrosoftDeploymentToolkit.psd1"
 
             If ($GoldDeploy -eq "y")
@@ -426,7 +426,9 @@ else {
                 ## Create Build Share
                 Write-Host "Creating Build Share"
                 New-Item -Path "$MdtBuildShare" -ItemType Directory | Out-Null
-                New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess Administrators | Out-Null
+                $AdminSID = New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")
+                $AdminGroup = $AdminSID.Translate([System.Security.Principal.NTAccount]).Value
+                New-SmbShare -Name "$MdtBuildShareName" -Path "$MdtBuildShare" -FullAccess $AdminGroup | Out-Null
                 New-PSDrive -Name "DS001" -PSProvider "MDTProvider" -Root "$MdtBuildShare" -Description "MDT Build Share" -NetworkPath "\\$env:ComputerName\$MdtBuildShareName" | Add-MDTPersistentDrive | Out-Null
 
                 If ($ConvertESD -eq "y")
@@ -529,7 +531,9 @@ else {
             ## Create Deployment Share
             Write-Host "Creating Deployment Share"
             New-Item -Path "$MdtDepShare" -ItemType Directory | Out-Null
-            New-SmbShare -Name "$MdtDepShareName" -Path "$MdtDepShare" -FullAccess Administrators | Out-Null
+            $AdminSID = New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")
+            $AdminGroup = $AdminSID.Translate([System.Security.Principal.NTAccount]).Value
+            New-SmbShare -Name "$MdtDepShareName" -Path "$MdtDepShare" -FullAccess $AdminGroup | Out-Null
             New-PSDrive -Name "DS002" -PSProvider "MDTProvider" -Root "$MdtDepShare" -Description "MDT Deploy Share" -NetworkPath "\\$env:ComputerName\$MdtDepShareName" | Add-MDTPersistentDrive | Out-Null
 
             If ($GoldDeploy -eq "n")
